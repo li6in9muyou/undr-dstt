@@ -45,3 +45,8 @@ However, code quality is very poor.
 System input and output are stored in Excel spreadsheets and they are extremely enigmatic.
 It's not worth it to adopt its input/output format.
 I'd better design my own.
+
+# Input/Ouput design
+
+My system may not need an I/O scheme.
+[A paper](https://doi.org/10.1016/j.cor.2020.105046) I found measures system throughput which implies that all AGVs just delivers package endlessly and packages arrive constantly.
