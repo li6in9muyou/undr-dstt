@@ -49,4 +49,18 @@ I'd better design my own.
 # Input/Ouput design
 
 My system may not need an I/O scheme.
-[A paper](https://doi.org/10.1016/j.cor.2020.105046) I found measures system throughput which implies that all AGVs just delivers package endlessly and packages arrive constantly.
+[A dynamic path planning approach for dense, large, grid-based automated guided vehicle systems](https://doi.org/10.1016/j.cor.2020.105046) system throughput which implies that all AGVs just delivers package endlessly and packages arrive constantly hence no I/O scheme is required.
+However, throughput benchmark alone does not meet system requirements.
+
+# notes
+
+## map abstractions
+
+what is a job?
+
+tuple(arrival_time, from, to)
+
+what is a map?
+
+- empty tile
+- wall
