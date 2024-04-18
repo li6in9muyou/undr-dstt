@@ -74,6 +74,7 @@ class Agv {
   public job: Job | null;
   private route: { next: () => GraphNode };
   private getNextJob: (who: Agv) => Job;
+
   constructor(
     factory: FactoryMap,
     initLocation: GraphNode,
