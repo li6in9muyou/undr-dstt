@@ -1,8 +1,8 @@
 class Job {
   public arrival_time: number;
-  public from: IoSite;
-  public to: IoSite;
-  constructor(arrival_time: number, from: IoSite, to: IoSite) {
+  public from: number;
+  public to: number;
+  constructor(arrival_time: number, from: number, to: number) {
     this.arrival_time = arrival_time;
     this.from = from;
     this.to = to;
@@ -24,15 +24,6 @@ class GraphNode {
   }
 }
 
-class IoSite {
-  public name: string;
-  public location: GraphNode;
-  constructor(name: string, location: GraphNode) {
-    this.name = name;
-    this.location = location;
-  }
-}
-
 class FactoryMap {
   private nodes: Map<number, GraphNode> = new Map();
   constructor(nodes: GraphNode[]) {
@@ -51,14 +42,11 @@ A.linkTo(B, C);
 C.linkTo(A, B);
 
 const simpliestFactory = new FactoryMap([A, B, C]);
-const siteA = new IoSite("site A", A);
-const siteB = new IoSite("site B", B);
-const siteC = new IoSite("site C", C);
 
 const jobs: Job[] = [
-  new Job(1, siteB, siteA),
-  new Job(1, siteA, siteB),
-  new Job(2, siteB, siteA),
+  new Job(1, B.id, A.id),
+  new Job(1, A.id, B.id),
+  new Job(2, B.id, A.id),
 ];
 
 function planShortestPath(
@@ -70,14 +58,14 @@ function planShortestPath(
 }
 
 class Agv {
-  public location: GraphNode;
+  public location: number;
   public job: Job | null;
   private route: { next: () => GraphNode };
   private getNextJob: (who: Agv) => Job;
 
   constructor(
     factory: FactoryMap,
-    initLocation: GraphNode,
+    initLocation: number,
     getNextJob: (who: Agv) => Job,
   ) {
     this.location = initLocation;
@@ -97,4 +85,4 @@ class Agv {
   }
 }
 
-const agvs = [new Agv(simpliestFactory, A, () => jobs[0])];
+const agvs = [new Agv(simpliestFactory, A.id, () => jobs[0])];
