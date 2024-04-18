@@ -30,6 +30,13 @@ class FactoryMap {
   constructor(nodes: GraphNode[]) {
     nodes.forEach((node) => this.nodes.set(node.id, node));
   }
+  public getNeighbours(who: number): number[] {
+    const me = this.getById(who);
+    if (me === null) {
+      return [];
+    }
+    return me.neighbours.map((ngb) => ngb.id);
+  }
   public getById(id: number): GraphNode | null {
     return this.nodes.get(id) ?? null;
   }
@@ -51,18 +58,19 @@ const jobs: Job[] = [
 ];
 
 function planShortestPath(
-  factory: FactoryMap,
+  factory: { getNeighbours: (me: number) => number[] },
   from: number,
   to: number,
-): Iterator<number> {
+): IterableIterator<number> {
   return [from, to].values();
 }
 
 class Agv {
   public location: number;
   public job: Job | null;
-  private route: { next: () => GraphNode };
+  private route: IterableIterator<number>;
   private getNextJob: (who: Agv) => Job;
+  private factory: FactoryMap;
 
   constructor(
     factory: FactoryMap,
@@ -72,13 +80,14 @@ class Agv {
     this.location = initLocation;
     this.job = null;
     this.getNextJob = getNextJob;
+    this.factory = factory;
   }
   public update() {
     if (this.job === null) {
       this.job = this.getNextJob(this);
       this.route = planShortestPath(this.factory, this.job.from, this.job.to);
     } else {
-      this.location = this.route.next();
+      this.location = this.route.next().value;
       if (this.location == null) {
         this.job = null;
       }
