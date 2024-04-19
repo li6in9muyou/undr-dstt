@@ -71,7 +71,6 @@ class Agv {
     this.speaker = speaker;
     this.location = initLocation;
     this.job = null;
-    // TODO: maybe we should push jobs to agv so that job scheduling process could be made more pronounced
     this.factory = factory;
   }
   public assignJob(job: Job) {
