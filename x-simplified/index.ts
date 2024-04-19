@@ -14,6 +14,7 @@ class GraphNode {
   private static next_id = 1000;
   public id: number;
   public neighbours: GraphNode[];
+  public occupants = new Set<Agv>();
   constructor() {
     this.id = GraphNode.next_id++;
     this.neighbours = [];
@@ -39,6 +40,9 @@ class FactoryMap {
   }
   public getById(id: number): GraphNode | null {
     return this.nodes.get(id) ?? null;
+  }
+  public isOccupied(where: number): boolean {
+    return (this.getById(where)?.occupants.size ?? -1) > 0;
   }
 }
 
@@ -79,20 +83,46 @@ class Agv {
   ) {
     this.location = initLocation;
     this.job = null;
+    // TODO: maybe we should push jobs to agv so that job scheduling process could be made more pronounced
     this.getNextJob = getNextJob;
     this.factory = factory;
   }
-  public update() {
+  public update(): number {
     if (this.job === null) {
       this.job = this.getNextJob(this);
       this.route = planShortestPath(this.factory, this.job.from, this.job.to);
     } else {
-      this.location = this.route.next().value;
-      if (this.location == null) {
+      const nextLocation = this.route.next().value;
+      const arrived = nextLocation == null;
+      const must_wait = this.factory.isOccupied(nextLocation);
+      if (arrived) {
         this.job = null;
+        // TODO: what to do after one job is completed?
+      } else if (must_wait) {
+        // do nothing
+      } else {
+        this.location = nextLocation;
       }
     }
+    return this.location;
   }
 }
 
 const agvs = [new Agv(simpliestFactory, A.id, () => jobs[0])];
+
+// SIMULATION
+const queuedJobs: Job[] = [];
+function getNextJob(elapsed) {
+  if (queuedJobs.length === 0) {
+    queuedJobs.push(...jobs.filter((j) => j.arrival_time >= elapsed));
+    // FIXME: make sure that pop() returns the oldest job
+    queuedJobs.sort((a, b) => a.arrival_time - b.arrival_time);
+  }
+}
+for (let elapsed = 1; elapsed < 100; elapsed++) {
+  // TODO: what if there are so many incoming jobs that overwhelms agv?
+  for (const agv of agvs) {
+    if (agv.isIdle()) {
+    }
+  }
+}
