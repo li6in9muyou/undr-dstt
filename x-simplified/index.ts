@@ -68,9 +68,19 @@ interface Speaker {
   addPrefix: (prefix: string) => Speaker;
 }
 
+enum AgvS {
+  // no job assigned, do nothing
+  Roaming = 9000,
+  // running to job.to to deliver whatever crap
+  Running = 9001,
+  // moving to job.from to pick up whatever crap
+  Fetching = 9002,
+}
+
 class Agv {
   private static serial_number: number = 3000;
   public id: string;
+  public state: AgvS;
 
   public location: number;
   public job: Job | null;
@@ -90,6 +100,7 @@ class Agv {
     this.job = null;
     this.factory = factory;
     this.getRoute = getRoute;
+    this.state = AgvS.Roaming;
 
     // FIXME: this will break if there are multiple agvs
     speaker.addPrefix(this.id);
