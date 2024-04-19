@@ -55,8 +55,12 @@ function planShortestPath(
   factory: { getNeighbours: (me: number) => number[] },
   from: number,
   to: number,
-): IterableIterator<number> {
-  return [from, to].values();
+): number[] {
+  if (from === to) {
+    return [];
+  } else {
+    return [from, to];
+  }
 }
 
 interface Speaker {
@@ -70,17 +74,24 @@ class Agv {
 
   public location: number;
   public job: Job | null;
-  private route: IterableIterator<number> | null;
+  private getRoute: (factory: FactoryMap, from: number, to: number) => number[];
   private factory: FactoryMap;
   private speaker: Speaker;
 
-  constructor(factory: FactoryMap, initLocation: number, speaker: Speaker) {
+  constructor(
+    factory: FactoryMap,
+    initLocation: number,
+    speaker: Speaker,
+    getRoute: (factory: FactoryMap, from: number, to: number) => number[],
+  ) {
     this.id = `agv-${++Agv.serial_number}`;
     this.speaker = speaker;
     this.location = initLocation;
     this.job = null;
     this.factory = factory;
+    this.getRoute = getRoute;
 
+    // FIXME: this will break if there are multiple agvs
     speaker.addPrefix(this.id);
   }
   public assignJob(job: Job) {
@@ -90,7 +101,6 @@ class Agv {
     );
 
     this.job = job;
-    this.route = planShortestPath(this.factory, this.job.from, this.job.to);
   }
   public update(elapsed: number): number {
     if (this.job === null) {
@@ -99,12 +109,8 @@ class Agv {
       return this.location;
     }
 
-    console.assert(
-      this.route !== null,
-      "Agv::update: a job must have a valid route",
-    );
-
-    const nextLocation = this.route!.next().value;
+    const route = this.getRoute(this.factory, this.location, this.job.to);
+    const nextLocation = route[1] ?? null;
     const isJobCompleted = nextLocation == null;
     const must_wait = this.factory.isOccupied(nextLocation);
     const keep_running = !isJobCompleted && !must_wait;
@@ -169,7 +175,7 @@ export function main(config = { iteration_cnt: 10 }) {
   ];
 
   const sp = new SimpleSpeaker();
-  const agvs = [new Agv(simpliestFactory, A.id, sp)];
+  const agvs = [new Agv(simpliestFactory, A.id, sp, planShortestPath)];
 
   // SIMULATION
   const queuedJobs: Job[] = [];
