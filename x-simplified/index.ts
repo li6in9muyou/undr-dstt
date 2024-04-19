@@ -86,6 +86,7 @@ class Agv {
   public update(elapsed: number): number {
     if (this.job === null) {
       // idle, do not move
+      this.speaker.info(`idle at location ${this.location}`);
       return this.location;
     }
 
@@ -115,6 +116,7 @@ class Agv {
 
     if (must_wait) {
       // do nothing
+      this.speaker.info(`blocked at location ${this.location}`);
       return this.location;
     }
 
