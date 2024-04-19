@@ -183,6 +183,7 @@ export function main(config = { iteration_cnt: 10 }) {
     new Job(1, B.id, A.id),
     new Job(1, A.id, B.id),
     new Job(2, B.id, A.id),
+    new Job(5, B.id, A.id),
   ];
 
   const sp = new SimpleSpeaker();
