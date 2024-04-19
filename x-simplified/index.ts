@@ -152,8 +152,7 @@ export function main(config = { iteration_cnt: 10 }) {
     const idle_agv = agvs.filter((agv) => agv.isIdle());
     if (queuedJobs.length < idle_agv.length) {
       queuedJobs.push(...jobs.filter((j) => j.arrival_time >= elapsed));
-      // FIXME: make sure that pop() returns the oldest job
-      queuedJobs.sort((a, b) => a.arrival_time - b.arrival_time);
+      queuedJobs.sort((a, b) => b.arrival_time - a.arrival_time);
     }
     if (queuedJobs.length > 0) {
       for (const agv of idle_agv) {
