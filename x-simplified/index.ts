@@ -55,12 +55,14 @@ function planShortestPath(
 }
 
 interface Speaker {
-  log: (...args: any) => void;
-  debug: (...args: any) => void;
   info: (...args: any) => void;
+  addPrefix: (prefix: string) => Speaker;
 }
 
 class Agv {
+  private static serial_number: number = 3000;
+  public id: string;
+
   public location: number;
   public job: Job | null;
   private route: IterableIterator<number> | null;
@@ -68,10 +70,13 @@ class Agv {
   private speaker: Speaker;
 
   constructor(factory: FactoryMap, initLocation: number, speaker: Speaker) {
+    this.id = `agv-${++Agv.serial_number}`;
     this.speaker = speaker;
     this.location = initLocation;
     this.job = null;
     this.factory = factory;
+
+    speaker.addPrefix(this.id);
   }
   public assignJob(job: Job) {
     console.assert(
@@ -127,6 +132,21 @@ class Agv {
   }
 }
 
+class SimpleSpeaker implements Speaker {
+  private prefix = "";
+  info(...args: any[]): void {
+    if (this.prefix !== "") {
+      console.info(this.prefix, ...args);
+    } else {
+      console.info(...args);
+    }
+  }
+  addPrefix(prefix: string): Speaker {
+    this.prefix = `${prefix}${this.prefix}`;
+    return this;
+  }
+}
+
 export function main(config = { iteration_cnt: 10 }) {
   const A = new GraphNode();
   const B = new GraphNode();
@@ -142,7 +162,9 @@ export function main(config = { iteration_cnt: 10 }) {
     new Job(1, A.id, B.id),
     new Job(2, B.id, A.id),
   ];
-  const agvs = [new Agv(simpliestFactory, A.id, console)];
+
+  const sp = new SimpleSpeaker();
+  const agvs = [new Agv(simpliestFactory, A.id, sp)];
 
   // SIMULATION
   const queuedJobs: Job[] = [];
