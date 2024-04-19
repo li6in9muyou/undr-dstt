@@ -126,7 +126,7 @@ class Agv {
   }
 }
 
-export function main() {
+export function main(config = { iteration_cnt: 10 }) {
   const A = new GraphNode();
   const B = new GraphNode();
   const C = new GraphNode();
@@ -146,7 +146,7 @@ export function main() {
   // SIMULATION
   const queuedJobs: Job[] = [];
 
-  for (let elapsed = 1; elapsed < 100; elapsed++) {
+  for (let elapsed = 1; elapsed < config.iteration_cnt; elapsed++) {
     // TODO: what if there are so many incoming jobs that overwhelms agv?
     const idle_agv = agvs.filter((agv) => agv.isIdle());
     if (queuedJobs.length < idle_agv.length) {
