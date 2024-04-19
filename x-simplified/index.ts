@@ -2,10 +2,15 @@ class Job {
   public arrival_time: number;
   public from: number;
   public to: number;
+  public completion_time: number;
   constructor(arrival_time: number, from: number, to: number) {
     this.arrival_time = arrival_time;
     this.from = from;
     this.to = to;
+    this.completion_time = Number.POSITIVE_INFINITY;
+  }
+  dumpTimestamps(): string {
+    return `arrived ${this.arrival_time} completed ${this.completion_time}`;
   }
 }
 
@@ -105,14 +110,14 @@ class Agv {
     const keep_running = !arrived && !must_wait;
 
     if (keep_running) {
+      this.speaker.info(`${this.location}->${nextLocation}`);
       this.location = nextLocation;
       return this.location;
     }
 
     if (arrived) {
-      this.speaker.info(
-        `arrived ${this.job.from}@t${this.job.arrival_time}->${this.job.to}@t${elapsed}`,
-      );
+      this.job.completion_time = elapsed;
+      this.speaker.info(`${this.job.dumpTimestamps()}`);
       this.job = null;
       // TODO: what to do after one job is completed?
       return this.location;
