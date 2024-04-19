@@ -46,21 +46,6 @@ class FactoryMap {
   }
 }
 
-const A = new GraphNode();
-const B = new GraphNode();
-const C = new GraphNode();
-B.linkTo(A, C);
-A.linkTo(B, C);
-C.linkTo(A, B);
-
-const simpliestFactory = new FactoryMap([A, B, C]);
-
-const jobs: Job[] = [
-  new Job(1, B.id, A.id),
-  new Job(1, A.id, B.id),
-  new Job(2, B.id, A.id),
-];
-
 function planShortestPath(
   factory: { getNeighbours: (me: number) => number[] },
   from: number,
@@ -69,13 +54,21 @@ function planShortestPath(
   return [from, to].values();
 }
 
+interface Speaker {
+  log: (...args: any) => void;
+  debug: (...args: any) => void;
+  info: (...args: any) => void;
+}
+
 class Agv {
   public location: number;
   public job: Job | null;
   private route: IterableIterator<number> | null;
   private factory: FactoryMap;
+  private speaker: Speaker;
 
-  constructor(factory: FactoryMap, initLocation: number) {
+  constructor(factory: FactoryMap, initLocation: number, speaker: Speaker) {
+    this.speaker = speaker;
     this.location = initLocation;
     this.job = null;
     // TODO: maybe we should push jobs to agv so that job scheduling process could be made more pronounced
@@ -90,7 +83,7 @@ class Agv {
     this.job = job;
     this.route = planShortestPath(this.factory, this.job.from, this.job.to);
   }
-  public update(): number {
+  public update(elapsed: number): number {
     if (this.job === null) {
       // idle, do not move
       return this.location;
@@ -112,6 +105,9 @@ class Agv {
     }
 
     if (arrived) {
+      this.speaker.info(
+        `arrived ${this.job.from}@t${this.job.arrival_time}->${this.job.to}@t${elapsed}`,
+      );
       this.job = null;
       // TODO: what to do after one job is completed?
       return this.location;
@@ -130,23 +126,39 @@ class Agv {
   }
 }
 
-const agvs = [new Agv(simpliestFactory, A.id)];
+export function main() {
+  const A = new GraphNode();
+  const B = new GraphNode();
+  const C = new GraphNode();
+  B.linkTo(A, C);
+  A.linkTo(B, C);
+  C.linkTo(A, B);
 
-// SIMULATION
-const queuedJobs: Job[] = [];
+  const simpliestFactory = new FactoryMap([A, B, C]);
 
-for (let elapsed = 1; elapsed < 100; elapsed++) {
-  // TODO: what if there are so many incoming jobs that overwhelms agv?
-  const idle_agv = agvs.filter((agv) => agv.isIdle());
-  if (queuedJobs.length < idle_agv.length) {
-    queuedJobs.push(...jobs.filter((j) => j.arrival_time >= elapsed));
-    // FIXME: make sure that pop() returns the oldest job
-    queuedJobs.sort((a, b) => a.arrival_time - b.arrival_time);
-  }
-  if (queuedJobs.length > 0) {
-    for (const agv of idle_agv) {
-      agv.assignJob(queuedJobs.pop()!);
+  const jobs: Job[] = [
+    new Job(1, B.id, A.id),
+    new Job(1, A.id, B.id),
+    new Job(2, B.id, A.id),
+  ];
+  const agvs = [new Agv(simpliestFactory, A.id, console)];
+
+  // SIMULATION
+  const queuedJobs: Job[] = [];
+
+  for (let elapsed = 1; elapsed < 100; elapsed++) {
+    // TODO: what if there are so many incoming jobs that overwhelms agv?
+    const idle_agv = agvs.filter((agv) => agv.isIdle());
+    if (queuedJobs.length < idle_agv.length) {
+      queuedJobs.push(...jobs.filter((j) => j.arrival_time >= elapsed));
+      // FIXME: make sure that pop() returns the oldest job
+      queuedJobs.sort((a, b) => a.arrival_time - b.arrival_time);
     }
+    if (queuedJobs.length > 0) {
+      for (const agv of idle_agv) {
+        agv.assignJob(queuedJobs.pop()!);
+      }
+    }
+    agvs.forEach((agv) => agv.update(elapsed));
   }
-  agvs.forEach((agv) => agv.update());
 }
