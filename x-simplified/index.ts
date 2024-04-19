@@ -105,9 +105,9 @@ class Agv {
     );
 
     const nextLocation = this.route!.next().value;
-    const arrived = nextLocation == null;
+    const isJobCompleted = nextLocation == null;
     const must_wait = this.factory.isOccupied(nextLocation);
-    const keep_running = !arrived && !must_wait;
+    const keep_running = !isJobCompleted && !must_wait;
 
     if (keep_running) {
       this.speaker.info(`${this.location}->${nextLocation}`);
@@ -115,7 +115,7 @@ class Agv {
       return this.location;
     }
 
-    if (arrived) {
+    if (isJobCompleted) {
       this.job.completion_time = elapsed;
       this.speaker.info(`${this.job.dumpTimestamps()}`);
       this.job = null;
