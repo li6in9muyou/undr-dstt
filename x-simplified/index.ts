@@ -148,4 +148,5 @@ for (let elapsed = 1; elapsed < 100; elapsed++) {
       agv.assignJob(queuedJobs.pop()!);
     }
   }
+  agvs.forEach((agv) => agv.update());
 }
