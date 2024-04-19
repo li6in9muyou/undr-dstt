@@ -72,64 +72,80 @@ function planShortestPath(
 class Agv {
   public location: number;
   public job: Job | null;
-  private route: IterableIterator<number>;
-  private getNextJob: (who: Agv) => Job;
+  private route: IterableIterator<number> | null;
   private factory: FactoryMap;
 
-  constructor(
-    factory: FactoryMap,
-    initLocation: number,
-    getNextJob: (who: Agv) => Job,
-  ) {
+  constructor(factory: FactoryMap, initLocation: number) {
     this.location = initLocation;
     this.job = null;
     // TODO: maybe we should push jobs to agv so that job scheduling process could be made more pronounced
-    this.getNextJob = getNextJob;
     this.factory = factory;
   }
   public assignJob(job: Job) {
     console.assert(
       this.job === null,
-      "Agv::assignJob: currently running a job",
+      "Agv::assignJob: must assign job to and idle agv",
     );
+
     this.job = job;
+    this.route = planShortestPath(this.factory, this.job.from, this.job.to);
   }
   public update(): number {
     if (this.job === null) {
-      this.job = this.getNextJob(this);
-      this.route = planShortestPath(this.factory, this.job.from, this.job.to);
-    } else {
-      const nextLocation = this.route.next().value;
-      const arrived = nextLocation == null;
-      const must_wait = this.factory.isOccupied(nextLocation);
-      if (arrived) {
-        this.job = null;
-        // TODO: what to do after one job is completed?
-      } else if (must_wait) {
-        // do nothing
-      } else {
-        this.location = nextLocation;
-      }
+      // idle, do not move
+      return this.location;
     }
-    return this.location;
+
+    console.assert(
+      this.route !== null,
+      "Agv::update: a job must have a valid route",
+    );
+
+    const nextLocation = this.route!.next().value;
+    const arrived = nextLocation == null;
+    const must_wait = this.factory.isOccupied(nextLocation);
+    const keep_running = !arrived && !must_wait;
+
+    if (keep_running) {
+      this.location = nextLocation;
+      return this.location;
+    }
+
+    if (arrived) {
+      this.job = null;
+      // TODO: what to do after one job is completed?
+      return this.location;
+    }
+
+    if (must_wait) {
+      // do nothing
+      return this.location;
+    }
+
+    console.assert(false, "Agv::update: logic error, invalide execution path");
+    throw "LOGIC ERROR";
+  }
+  public isIdle(): boolean {
+    return this.job === null;
   }
 }
 
-const agvs = [new Agv(simpliestFactory, A.id, () => jobs[0])];
+const agvs = [new Agv(simpliestFactory, A.id)];
 
 // SIMULATION
 const queuedJobs: Job[] = [];
-function getNextJob(elapsed) {
-  if (queuedJobs.length === 0) {
+
+for (let elapsed = 1; elapsed < 100; elapsed++) {
+  // TODO: what if there are so many incoming jobs that overwhelms agv?
+  const idle_agv = agvs.filter((agv) => agv.isIdle());
+  if (queuedJobs.length < idle_agv.length) {
     queuedJobs.push(...jobs.filter((j) => j.arrival_time >= elapsed));
     // FIXME: make sure that pop() returns the oldest job
     queuedJobs.sort((a, b) => a.arrival_time - b.arrival_time);
   }
-}
-for (let elapsed = 1; elapsed < 100; elapsed++) {
-  // TODO: what if there are so many incoming jobs that overwhelms agv?
-  for (const agv of agvs) {
-    if (agv.isIdle()) {
+  if (queuedJobs.length > 0) {
+    for (const agv of idle_agv) {
+      agv.assignJob(queuedJobs.pop()!);
     }
   }
 }
