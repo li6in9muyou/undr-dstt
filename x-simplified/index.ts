@@ -87,6 +87,13 @@ class Agv {
     this.getNextJob = getNextJob;
     this.factory = factory;
   }
+  public assignJob(job: Job) {
+    console.assert(
+      this.job === null,
+      "Agv::assignJob: currently running a job",
+    );
+    this.job = job;
+  }
   public update(): number {
     if (this.job === null) {
       this.job = this.getNextJob(this);
