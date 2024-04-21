@@ -47,6 +47,7 @@ class FactoryMap {
     return this.nodes.get(id) ?? null;
   }
   public isOccupied(where: number): boolean {
+    console.assert(Number.isFinite(where), "querying invalid location");
     return (this.getById(where)?.occupants.size ?? -1) > 0;
   }
 }
@@ -115,6 +116,7 @@ class Agv {
     );
 
     this.job = job;
+    this.speaker.info(`assigned: ${this.job.from} ~~> ${this.job.to}`);
   }
   public update(elapsed: number): number {
     if (this.isIdle()) {
@@ -141,6 +143,7 @@ class Agv {
       if (arrived_after_this_step) {
         this.loaded = true;
         this.state = AgvS.Running;
+        this.speaker.info(`${this.location}->${nextLocation}`);
         this.location = nextLocation;
         return this.location;
       }
@@ -158,7 +161,7 @@ class Agv {
       this.job!.to,
     );
     const isJobCompleted = this.location === this.job!.to;
-    const must_wait = this.factory.isOccupied(nextLocation);
+    const must_wait = !!nextLocation && this.factory.isOccupied(nextLocation);
     const keep_running = !isJobCompleted && !must_wait;
 
     if (keep_running) {
