@@ -10,7 +10,7 @@ class Job {
     this.completion_time = Number.POSITIVE_INFINITY;
   }
   dumpTimestamps(): string {
-    return `arrived ${this.arrival_time} completed ${this.completion_time}`;
+    return `job arrived ${this.arrival_time} completed ${this.completion_time}`;
   }
 }
 
