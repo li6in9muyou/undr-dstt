@@ -106,6 +106,7 @@ class Agv {
 
     // FIXME: this will break if there are multiple agvs
     speaker.addPrefix(this.id);
+    this.speaker.info(`starting at ${this.location}`);
   }
   public assignJob(job: Job) {
     console.assert(
@@ -124,18 +125,30 @@ class Agv {
     }
 
     if (this.isFetching()) {
-      this.speaker.info(
-        `fetching: destination ${this.job!.to} current ${this.location}`,
+      const [current_ignored, nextLocation, ...rest_ignored] = this.getRoute(
+        this.factory,
+        this.location,
+        this.job!.from,
       );
-      const route = this.getRoute(this.factory, this.location, this.job!.from);
-      const nextLocation = route[1] ?? null;
-      const fetched = nextLocation === this.job!.from;
-      if (fetched) {
+      const arrived_after_this_step = nextLocation === this.job!.from;
+      const already_arrived = nextLocation === undefined;
+      if (!already_arrived) {
+        this.speaker.info(
+          `fetching: destination ${this.job!.from} current ${this.location}`,
+        );
+      }
+      if (arrived_after_this_step) {
         this.loaded = true;
         this.state = AgvS.Running;
+        this.location = nextLocation;
+        return this.location;
       }
-      this.location = nextLocation;
-      return this.location;
+
+      if (already_arrived) {
+        this.loaded = true;
+        this.state = AgvS.Running;
+        // fall through
+      }
     }
 
     const route = this.getRoute(this.factory, this.location, this.job!.to);
