@@ -87,6 +87,7 @@ class Agv {
   private getRoute: (factory: FactoryMap, from: number, to: number) => number[];
   private factory: FactoryMap;
   private speaker: Speaker;
+  public loaded: boolean;
 
   constructor(
     factory: FactoryMap,
@@ -101,6 +102,7 @@ class Agv {
     this.factory = factory;
     this.getRoute = getRoute;
     this.state = AgvS.Roaming;
+    this.loaded = false;
 
     // FIXME: this will break if there are multiple agvs
     speaker.addPrefix(this.id);
@@ -114,13 +116,29 @@ class Agv {
     this.job = job;
   }
   public update(elapsed: number): number {
-    if (this.job === null) {
+    if (this.isIdle()) {
       // idle, do not move
+      this.state = AgvS.Roaming;
       this.speaker.info(`idle at location ${this.location}`);
       return this.location;
     }
 
-    const route = this.getRoute(this.factory, this.location, this.job.to);
+    if (this.isFetching()) {
+      this.speaker.info(
+        `fetching: destination ${this.job!.to} current ${this.location}`,
+      );
+      const route = this.getRoute(this.factory, this.location, this.job!.from);
+      const nextLocation = route[1] ?? null;
+      const fetched = nextLocation === this.job!.from;
+      if (fetched) {
+        this.loaded = true;
+        this.state = AgvS.Running;
+      }
+      this.location = nextLocation;
+      return this.location;
+    }
+
+    const route = this.getRoute(this.factory, this.location, this.job!.to);
     const nextLocation = route[1] ?? null;
     const isJobCompleted = this.location === this.job!.to;
     const must_wait = this.factory.isOccupied(nextLocation);
@@ -133,9 +151,10 @@ class Agv {
     }
 
     if (isJobCompleted) {
-      this.job.completion_time = elapsed;
-      this.speaker.info(`${this.job.dumpTimestamps()}`);
+      this.job!.completion_time = elapsed;
+      this.speaker.info(`${this.job!.dumpTimestamps()}`);
       this.job = null;
+      this.loaded = false;
       // TODO: what to do after one job is completed?
       return this.location;
     }
@@ -151,6 +170,9 @@ class Agv {
   }
   public isIdle(): boolean {
     return this.job === null;
+  }
+  public isFetching(): boolean {
+    return this.job !== null && !this.loaded;
   }
 }
 
