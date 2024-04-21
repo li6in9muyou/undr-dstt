@@ -125,7 +125,8 @@ class Agv {
     }
 
     if (this.isFetching()) {
-      const [current_ignored, nextLocation, ...rest_ignored] = this.getRoute(
+      // [current_ignored, nextLocation, ...rest_ignored]
+      const [_, nextLocation, ...__] = this.getRoute(
         this.factory,
         this.location,
         this.job!.from,
