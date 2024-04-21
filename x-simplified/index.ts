@@ -152,8 +152,11 @@ class Agv {
       }
     }
 
-    const route = this.getRoute(this.factory, this.location, this.job!.to);
-    const nextLocation = route[1] ?? null;
+    const [_, nextLocation, ...__] = this.getRoute(
+      this.factory,
+      this.location,
+      this.job!.to,
+    );
     const isJobCompleted = this.location === this.job!.to;
     const must_wait = this.factory.isOccupied(nextLocation);
     const keep_running = !isJobCompleted && !must_wait;
