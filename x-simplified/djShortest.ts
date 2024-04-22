@@ -1,14 +1,51 @@
 import { dijkstrasAlgorithm, getShortestPath } from "dijkstras-algorithm-ts";
 
 export function planShortestPath(
-  world: { getNeighbours: (me: number) => number[] },
+  world: { getNeighbours: (me: number) => { id: number; cost: number }[] },
   from: number,
   to: number,
 ): number[] {
-  costs = new Map();
+  const costs = new Map();
   costs.set(from, 0);
   costs.set(to, Number.POSITIVE_INFINITY);
-  const processed = new Set();
 
-  while (node !== null) {}
+  let here = from;
+  const task = new Set([here]);
+  const processed = new Set();
+  const parent = new Map();
+  while (here !== null) {
+    const costToHere = costs.get(here);
+    for (const { id, cost } of world.getNeighbours(here)) {
+      if (!processed.has(id)) {
+        task.add(id);
+      }
+
+      const costWhatIf = costToHere + cost;
+      const neverSeenBefore = !costs.has(id);
+      const better = costWhatIf < costs.get(id) ?? 0;
+      if (better || neverSeenBefore) {
+        costs.set(id, costWhatIf);
+        parent.set(id, here);
+      }
+    }
+    task.delete(here);
+    processed.add(here);
+
+    const orderByMinCost = Array.from(task).toSorted(
+      (a: number, b: number) => costs.get(a) - costs.get(b),
+    );
+    here = orderByMinCost[0] ?? null;
+  }
+
+  const path: number[] = [];
+  let step = to;
+  while (true) {
+    path.push(step);
+    if (step === from) {
+      break;
+    }
+    step = parent.get(step);
+  }
+  path.reverse();
+  return path;
 }
