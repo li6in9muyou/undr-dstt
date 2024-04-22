@@ -1,9 +1,14 @@
 import { dijkstrasAlgorithm, getShortestPath } from "dijkstras-algorithm-ts";
 
 export function planShortestPath(
-  factory: { getNeighbours: (me: number) => number[] },
+  world: { getNeighbours: (me: number) => number[] },
   from: number,
   to: number,
 ): number[] {
-  return getShortestPath(dijkstrasAlgorithm(graph, from), to);
+  costs = new Map();
+  costs.set(from, 0);
+  costs.set(to, Number.POSITIVE_INFINITY);
+  const processed = new Set();
+
+  while (node !== null) {}
 }
