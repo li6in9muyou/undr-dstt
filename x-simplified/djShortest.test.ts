@@ -1,7 +1,7 @@
-import { expect, test } from "vitest";
+import { expect, it } from "vitest";
 import { planShortestPath } from "./djShortest";
 
-test("dj shortest path", () => {
+it("should return shortest path", () => {
   const world = new (class {
     private nodes: Map<number, number[]>;
     public constructor() {
@@ -13,9 +13,8 @@ test("dj shortest path", () => {
         [20, [2]],
       ]);
     }
-    public getNeighbours(me: number): { id: number; cost: number }[] {
-      const neighboursId = this.nodes.get(me)!;
-      return neighboursId.map((ngb) => ({ id: ngb, cost: 1 }));
+    public getNeighbours(me: number): number[] {
+      return this.nodes.get(me)!;
     }
   })();
   expect(planShortestPath(world, 0, 20)).toStrictEqual([0, 2, 20]);

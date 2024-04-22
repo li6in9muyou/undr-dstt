@@ -1,6 +1,6 @@
 import { dijkstrasAlgorithm, getShortestPath } from "dijkstras-algorithm-ts";
 
-export function planShortestPath(
+export function dj(
   world: { getNeighbours: (me: number) => { id: number; cost: number }[] },
   from: number,
   to: number,
@@ -48,4 +48,15 @@ export function planShortestPath(
   }
   path.reverse();
   return path;
+}
+
+export function planShortestPath(
+  world: { getNeighbours: (me: number) => number[] },
+  from: number,
+  to: number,
+) {
+  function djAdapter(me: number): { id: number; cost: number }[] {
+    return world.getNeighbours(me).map((ngb) => ({ id: ngb, cost: 1 }));
+  }
+  return dj({ getNeighbours: djAdapter }, from, to);
 }
