@@ -3,6 +3,10 @@ export function dj(
   from: number,
   to: number,
 ): number[] {
+  if (from === to) {
+    return [];
+  }
+
   const costs = new Map();
   costs.set(from, 0);
   costs.set(to, Number.POSITIVE_INFINITY);
