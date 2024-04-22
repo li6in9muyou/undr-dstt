@@ -12,5 +12,8 @@
   "devDependencies": {
     "vite": "^5.2.9",
     "vitest": "^1.5.0"
+  },
+  "dependencies": {
+    "dijkstras-algorithm-ts": "^1.0.11"
   }
 }

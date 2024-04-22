@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { main } from ".";
+import { main } from "./index";
 
 test("sanity test", () => {
   main({ iteration_cnt: 20 });

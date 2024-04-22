@@ -1,3 +1,5 @@
+import { planShortestPath } from "./djShortest";
+
 class Job {
   public arrival_time: number;
   public from: number;
@@ -49,18 +51,6 @@ class FactoryMap {
   public isOccupied(where: number): boolean {
     console.assert(Number.isFinite(where), "querying invalid location");
     return (this.getById(where)?.occupants.size ?? -1) > 0;
-  }
-}
-
-function planShortestPath(
-  factory: { getNeighbours: (me: number) => number[] },
-  from: number,
-  to: number,
-): number[] {
-  if (from === to) {
-    return [];
-  } else {
-    return [from, to];
   }
 }
 
