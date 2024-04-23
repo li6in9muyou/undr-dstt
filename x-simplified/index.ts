@@ -1,10 +1,47 @@
 import { planShortestPath } from "./djShortest";
 
+const SIM_CTX = { elapsed: NaN };
+
+function traceJobCompleted(
+  job: Job,
+  agv: Agv,
+): { agv: string; from: number; to: number } {
+  // statistic
+  job.completion_time = SIM_CTX.elapsed;
+  // render
+  console.log(
+    `${agv.id} job arrived ${job.arrival_time} completed ${job.completion_time}`,
+  );
+  return {
+    agv: agv.id,
+    from: job.from,
+    to: job.to,
+  };
+}
+
+function traceJobAssigned(
+  job: Job,
+  agv: Agv,
+): { agv: string; from: number; to: number } {
+  // statistic
+  job.start_time = SIM_CTX.elapsed;
+  // render
+  console.log(`${agv.id} assigned: ${job.from} ~~> ${job.to}`);
+  return {
+    agv: agv.id,
+    from: job.from,
+    to: job.to,
+  };
+}
+
 class Job {
-  public arrival_time: number;
   public from: number;
   public to: number;
+
+  public arrival_time: number;
+  public start_time: number;
   public completion_time: number;
+
   constructor(arrival_time: number, from: number, to: number) {
     this.arrival_time = arrival_time;
     this.from = from;
@@ -106,7 +143,7 @@ class Agv {
     );
 
     this.job = job;
-    this.speaker.info(`assigned: ${this.job.from} ~~> ${this.job.to}`);
+    traceJobAssigned(job, this);
   }
   public update(elapsed: number): number {
     if (this.isIdle()) {
@@ -161,8 +198,7 @@ class Agv {
     }
 
     if (isJobCompleted) {
-      this.job!.completion_time = elapsed;
-      this.speaker.info(`${this.job!.dumpTimestamps()}`);
+      traceJobCompleted(this.job!, this);
       this.job = null;
       this.loaded = false;
       // TODO: what to do after one job is completed?
@@ -225,6 +261,8 @@ export function main(config = { iteration_cnt: 10 }) {
   const queuedJobs: Job[] = [];
 
   for (let elapsed = 1; elapsed < config.iteration_cnt; elapsed++) {
+    SIM_CTX.elapsed = elapsed;
+
     // TODO: what if there are so many incoming jobs that overwhelms agv?
     const idle_agv = agvs.filter((agv) => agv.isIdle());
     if (queuedJobs.length < idle_agv.length) {
