@@ -11,7 +11,7 @@ export function dj(
   costs.set(from, 0);
   costs.set(to, Number.POSITIVE_INFINITY);
 
-  let here = from;
+  let here: number | null = from;
   const task = new Set([here]);
   const processed = new Set();
   const parent = new Map();
@@ -33,10 +33,18 @@ export function dj(
     task.delete(here);
     processed.add(here);
 
-    const orderByMinCost = Array.from(task).toSorted(
-      (a: number, b: number) => costs.get(a) - costs.get(b),
-    );
-    here = orderByMinCost[0] ?? null;
+    const tt = Array.from(task);
+    if (tt.length === 0) {
+      here = null;
+    } else {
+      here = tt.reduce((min, t) => {
+        if (costs.get(t) < costs.get(min)) {
+          return t;
+        } else {
+          return min;
+        }
+      });
+    }
   }
 
   const canNotReach = !isFinite(costs.get(to));
