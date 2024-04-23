@@ -53,8 +53,30 @@ class FactoryMap {
     return (this.getById(where)?.occupants.size ?? -1) > 0;
   }
 }
+class SimulationTrace {
+  public static traceAgvLocation(agv: Agv, location: number): SimulationTrace {
+    return 1;
+  }
+  public update(elapsed: number) {}
+}
+
+namespace SimulationTrace {
+  export enum T {
+    // assigned
+    // picked up
+    // completed
+    JobStatus,
+    // travel in last iteration, or stuck in traffic jam
+    AgvTravel,
+    // if loaded and if fetching
+    AgvStartRunning,
+    AgvStartFetching,
+    AgvStartIdling,
+  }
+}
 
 interface Speaker {
+  trace: (trace: SimulationTrace) => void;
   info: (...args: any) => void;
   addPrefix: (prefix: string) => Speaker;
 }
