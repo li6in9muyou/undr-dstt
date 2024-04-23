@@ -59,5 +59,5 @@ it("should return null when there is no path", () => {
       return this.nodes.get(me)!;
     }
   })();
-  expect(planShortestPath(world, 0, 30)).toStrictEqual([0, 2, 20]);
+  expect(planShortestPath(world, 0, 30)).toStrictEqual([]);
 });

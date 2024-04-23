@@ -39,6 +39,11 @@ export function dj(
     here = orderByMinCost[0] ?? null;
   }
 
+  const canNotReach = !isFinite(costs.get(to));
+  if (canNotReach) {
+    return [];
+  }
+
   const path: number[] = [];
   let step = to;
   while (true) {
