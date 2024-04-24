@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import { GraphNode, FactoryMap, Agv, Job, simulation } from "./index";
 import { planShortestPath } from "./djShortest";
 
-test("sanity test", () => {
+test("fully connected trigangle factory", () => {
   const A = new GraphNode();
   const B = new GraphNode();
   const C = new GraphNode();
