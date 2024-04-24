@@ -93,7 +93,7 @@ function traceJobAssigned(
   };
 }
 
-class Job {
+export class Job {
   public from: number;
   public to: number;
 
@@ -113,7 +113,7 @@ class Job {
 }
 
 // TODO: make this completely contained in FactoryMap
-class GraphNode {
+export class GraphNode {
   private static next_id = 1000;
   public id: number;
   public neighbours: GraphNode[];
@@ -129,7 +129,7 @@ class GraphNode {
   }
 }
 
-class FactoryMap {
+export class FactoryMap {
   private nodes: Map<number, GraphNode> = new Map();
   constructor(nodes: GraphNode[]) {
     nodes.forEach((node) => this.nodes.set(node.id, node));
@@ -159,7 +159,7 @@ enum AgvS {
   Fetching = 9002,
 }
 
-class Agv {
+export class Agv {
   public stats_idle_time = new Set();
   public stats_fetching_time = new Set();
   public stats_running_time = new Set();
@@ -274,29 +274,16 @@ class Agv {
   }
 }
 
-export function main(config = { iteration_cnt: 10 }) {
-  const A = new GraphNode();
-  const B = new GraphNode();
-  const C = new GraphNode();
-  B.linkTo(A, C);
-  A.linkTo(B, C);
-  C.linkTo(A, B);
-
-  const simpliestFactory = new FactoryMap([A, B, C]);
-
-  const jobs: Job[] = [
-    new Job(1, B.id, A.id),
-    new Job(1, A.id, B.id),
-    new Job(2, B.id, A.id),
-    new Job(5, B.id, A.id),
-  ];
-
-  const agvs = [new Agv(simpliestFactory, A.id, planShortestPath)];
-
+export function simulation(config: {
+  iteration_cnt: number;
+  jobs: Job[];
+  agvs: Agv[];
+}) {
+  const { jobs, agvs, iteration_cnt } = config;
   // SIMULATION
   const queuedJobs: Job[] = [];
 
-  for (let elapsed = 1; elapsed < config.iteration_cnt; elapsed++) {
+  for (let elapsed = 1; elapsed < iteration_cnt; elapsed++) {
     SIM_CTX.elapsed = elapsed;
 
     // TODO: what if there are so many incoming jobs that overwhelms agv?
