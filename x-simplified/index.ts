@@ -136,11 +136,6 @@ class FactoryMap {
   }
 }
 
-interface Speaker {
-  info: (...args: any) => void;
-  addPrefix: (prefix: string) => Speaker;
-}
-
 enum AgvS {
   // no job assigned, do nothing
   Roaming = 9000,
@@ -159,17 +154,14 @@ class Agv {
   public job: Job | null;
   private getRoute: (factory: FactoryMap, from: number, to: number) => number[];
   private factory: FactoryMap;
-  private speaker: Speaker;
   public loaded: boolean;
 
   constructor(
     factory: FactoryMap,
     initLocation: number,
-    speaker: Speaker,
     getRoute: (factory: FactoryMap, from: number, to: number) => number[],
   ) {
     this.id = `agv-${++Agv.serial_number}`;
-    this.speaker = speaker;
     this.location = initLocation;
     this.job = null;
     this.factory = factory;
@@ -264,21 +256,6 @@ class Agv {
   }
 }
 
-class SimpleSpeaker implements Speaker {
-  private prefix = "";
-  info(...args: any[]): void {
-    if (this.prefix !== "") {
-      console.info(this.prefix, ...args);
-    } else {
-      console.info(...args);
-    }
-  }
-  addPrefix(prefix: string): Speaker {
-    this.prefix = `${prefix}${this.prefix}`;
-    return this;
-  }
-}
-
 export function main(config = { iteration_cnt: 10 }) {
   const A = new GraphNode();
   const B = new GraphNode();
@@ -296,8 +273,7 @@ export function main(config = { iteration_cnt: 10 }) {
     new Job(5, B.id, A.id),
   ];
 
-  const sp = new SimpleSpeaker();
-  const agvs = [new Agv(simpliestFactory, A.id, sp, planShortestPath)];
+  const agvs = [new Agv(simpliestFactory, A.id, planShortestPath)];
 
   // SIMULATION
   const queuedJobs: Job[] = [];
