@@ -2,6 +2,51 @@ import { planShortestPath } from "./djShortest";
 
 const SIM_CTX = { elapsed: NaN };
 
+function interalTraceAgvFetch(
+  isDone: boolean,
+  agv: Agv,
+  job: Job,
+): { done: boolean; agv: string } {
+  if (!isDone) {
+    console.log(
+      `${agv.id} fetching: destination ${job.from} current ${agv.location}`,
+    );
+  }
+  return { done: isDone, agv: agv.id };
+}
+
+function traceAgvStartFetch(
+  agv: Agv,
+  job: Job,
+): { done: boolean; agv: string } {
+  return interalTraceAgvFetch(false, agv, job);
+}
+
+function traceAgvLocation(
+  agv: Agv,
+  current: number,
+  next: number,
+): { agv: string; from: number; to: number } {
+  // statistic
+  const idle = agv.isIdle();
+  const blocked = current === next && !agv.isIdle();
+  const init = Number.isNaN(current);
+
+  // render
+  if (idle) {
+    console.log(`${agv.id} idle at location ${next}`);
+  } else if (init) {
+    console.log(`${agv.id} starting at ${next}`);
+  } else {
+    console.log(`${agv.id} ${current}->${next}`);
+  }
+  return {
+    agv: agv.id,
+    from: current,
+    to: next,
+  };
+}
+
 function traceJobCompleted(
   job: Job,
   agv: Agv,
@@ -133,8 +178,7 @@ class Agv {
     this.loaded = false;
 
     // FIXME: this will break if there are multiple agvs
-    speaker.addPrefix(this.id);
-    this.speaker.info(`starting at ${this.location}`);
+    traceAgvLocation(this, NaN, this.location);
   }
   public assignJob(job: Job) {
     console.assert(
@@ -149,7 +193,7 @@ class Agv {
     if (this.isIdle()) {
       // idle, do not move
       this.state = AgvS.Roaming;
-      this.speaker.info(`idle at location ${this.location}`);
+      traceAgvLocation(this, this.location, this.location);
       return this.location;
     }
 
@@ -163,14 +207,12 @@ class Agv {
       const arrived_after_this_step = nextLocation === this.job!.from;
       const already_arrived = nextLocation === undefined;
       if (!already_arrived) {
-        this.speaker.info(
-          `fetching: destination ${this.job!.from} current ${this.location}`,
-        );
+        traceAgvStartFetch(this, this.job!);
       }
       if (arrived_after_this_step) {
         this.loaded = true;
         this.state = AgvS.Running;
-        this.speaker.info(`${this.location}->${nextLocation}`);
+        traceAgvLocation(this, this.location, nextLocation);
         this.location = nextLocation;
         return this.location;
       }
@@ -192,7 +234,7 @@ class Agv {
     const keep_running = !isJobCompleted && !must_wait;
 
     if (keep_running) {
-      this.speaker.info(`${this.location}->${nextLocation}`);
+      traceAgvLocation(this, this.location, nextLocation);
       this.location = nextLocation;
       return this.location;
     }
@@ -207,7 +249,7 @@ class Agv {
 
     if (must_wait) {
       // do nothing
-      this.speaker.info(`blocked at location ${this.location}`);
+      traceAgvLocation(this, this.location, nextLocation);
       return this.location;
     }
 
