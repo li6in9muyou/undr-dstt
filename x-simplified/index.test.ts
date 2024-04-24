@@ -1,16 +1,13 @@
 import { expect, test } from "vitest";
-import { GraphNode, FactoryMap, Agv, Job, simulation } from "./index";
+import { FactoryMap, Agv, Job, simulation } from "./index";
 import { planShortestPath } from "./djShortest";
 
 test("fully connected trigangle factory", () => {
-  const A = new GraphNode();
-  const B = new GraphNode();
-  const C = new GraphNode();
+  const simpliestFactory = new FactoryMap(3);
+  const [A, B, C] = simpliestFactory.listNodes();
   B.linkTo(A, C);
   A.linkTo(B, C);
   C.linkTo(A, B);
-
-  const simpliestFactory = new FactoryMap([A, B, C]);
 
   const jobs: Job[] = [
     new Job(1, B.id, A.id),

@@ -113,7 +113,7 @@ export class Job {
 }
 
 // TODO: make this completely contained in FactoryMap
-export class GraphNode {
+class GraphNode {
   private static next_id = 1000;
   public id: number;
   public neighbours: GraphNode[];
@@ -131,8 +131,15 @@ export class GraphNode {
 
 export class FactoryMap {
   private nodes: Map<number, GraphNode> = new Map();
-  constructor(nodes: GraphNode[]) {
-    nodes.forEach((node) => this.nodes.set(node.id, node));
+  public listNodes(): IterableIterator<GraphNode> {
+    return this.nodes.values();
+  }
+
+  constructor(nodeCnt: number) {
+    new Array(nodeCnt)
+      .fill(null)
+      .map(() => new GraphNode())
+      .forEach((node) => this.nodes.set(node.id, node));
   }
   public getNeighbours(who: number): number[] {
     const me = this.getById(who);
