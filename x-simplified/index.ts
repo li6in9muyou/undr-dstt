@@ -294,4 +294,19 @@ export function main(config = { iteration_cnt: 10 }) {
     }
     agvs.forEach((agv) => agv.update(elapsed));
   }
+  const turn_around_time = jobs.map(
+    (job) => job.completion_time - job.arrival_time,
+  );
+  const run_time = jobs.map((job) => job.completion_time - job.start_time);
+  const wait_time = jobs.map((job) => job.start_time - job.arrival_time);
+  console.log(
+    `avg: turn around time ${turn_around_time.reduce((sum, x) => sum + x, 0) / jobs.length}, ` +
+      `run time ${run_time.reduce((sum, x) => sum + x, 0) / jobs.length}, ` +
+      `wait time ${wait_time.reduce((sum, x) => sum + x, 0) / jobs.length}`,
+  );
+  console.log(
+    `min-max: turn around time ${Math.min(...turn_around_time)}<${Math.max(...turn_around_time)}, ` +
+      `run time ${Math.min(...run_time)}<${Math.max(...run_time)}, ` +
+      `wait time ${Math.min(...wait_time)}<${Math.max(...wait_time)}`,
+  );
 }
