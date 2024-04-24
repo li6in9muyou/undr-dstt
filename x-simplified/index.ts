@@ -8,6 +8,7 @@ function interalTraceAgvFetch(
   job: Job,
 ): { done: boolean; agv: string } {
   if (!isDone) {
+    agv.stats_fetching_time.add(SIM_CTX.elapsed);
     console.log(
       `${agv.id} fetching: destination ${job.from} current ${agv.location}`,
     );
@@ -31,6 +32,19 @@ function traceAgvLocation(
   const idle = agv.isIdle();
   const blocked = current === next && !agv.isIdle();
   const init = Number.isNaN(current);
+  if (!init) {
+    switch (agv.state) {
+      case AgvS.Roaming:
+        agv.stats_idle_time.add(SIM_CTX.elapsed);
+        break;
+      case AgvS.Running:
+        agv.stats_running_time.add(SIM_CTX.elapsed);
+        break;
+      default:
+        // ignored
+        break;
+    }
+  }
 
   // render
   if (idle) {
@@ -146,6 +160,10 @@ enum AgvS {
 }
 
 class Agv {
+  public stats_idle_time = new Set();
+  public stats_fetching_time = new Set();
+  public stats_running_time = new Set();
+
   private static serial_number: number = 3000;
   public id: string;
   public state: AgvS;
@@ -308,5 +326,12 @@ export function main(config = { iteration_cnt: 10 }) {
     `min-max: turn around time ${Math.min(...turn_around_time)}<${Math.max(...turn_around_time)}, ` +
       `run time ${Math.min(...run_time)}<${Math.max(...run_time)}, ` +
       `wait time ${Math.min(...wait_time)}<${Math.max(...wait_time)}`,
+  );
+  agvs.forEach((agv) =>
+    console.log(
+      `time distribution: ${agv.id} ` +
+        `fetching ${agv.stats_fetching_time.size}, ` +
+        `running ${agv.stats_running_time.size}`,
+    ),
   );
 }
