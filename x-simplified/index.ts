@@ -121,8 +121,14 @@ class GraphNode {
     this.neighbours = [];
   }
 
-  linkTo(...nodes: GraphNode[]): GraphNode {
+  oneWayTo(...nodes: GraphNode[]): GraphNode {
     this.neighbours.push(...nodes);
+    return this;
+  }
+
+  twoWayTo(...nodes: GraphNode[]): GraphNode {
+    this.neighbours.push(...nodes);
+    nodes.forEach((node) => node.neighbours.push(this));
     return this;
   }
 }

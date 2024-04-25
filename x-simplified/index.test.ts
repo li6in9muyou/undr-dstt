@@ -5,9 +5,9 @@ import { planShortestPath } from "./djShortest";
 test("fully connected trigangle factory", () => {
   const simpliestFactory = new FactoryMap(3);
   const [A, B, C] = simpliestFactory.listNodes();
-  B.linkTo(A, C);
-  A.linkTo(B, C);
-  C.linkTo(A, B);
+  A.twoWayTo(B);
+  B.twoWayTo(C);
+  C.twoWayTo(A);
 
   const jobs: Job[] = [
     new Job(1, B.id, A.id),
