@@ -1,5 +1,3 @@
-import { planShortestPath } from "./djShortest";
-
 const SIM_CTX = { elapsed: NaN };
 
 function interalTraceAgvFetch(
