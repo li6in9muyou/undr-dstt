@@ -135,8 +135,26 @@ class GraphNode {
 
 export class FactoryMap {
   private nodes: Map<number, GraphNode> = new Map();
-  public listNodes(): IterableIterator<GraphNode> {
-    return this.nodes.values();
+  public listNodes(): number[] {
+    return Array.from(this.nodes.values()).map((node) => node.id);
+  }
+  public oneWayLink(from: number, to: number[]): FactoryMap {
+    const destNodes = to.map((t) => this.getById(t));
+    const startNode = this.getById(from);
+    if (startNode === null || destNodes.some((n) => n === null)) {
+      throw `FactoryMap: invalid node id ${from}`;
+    }
+    destNodes.forEach((dest) => startNode!.oneWayTo(dest!));
+    return this;
+  }
+  public twoWayLink(from: number, to: number[]): FactoryMap {
+    const destNodes = to.map((t) => this.getById(t));
+    const startNode = this.getById(from);
+    if (startNode === null || destNodes.some((n) => n === null)) {
+      throw `FactoryMap: invalid node id ${from}`;
+    }
+    destNodes.forEach((dest) => startNode!.twoWayTo(dest!));
+    return this;
   }
 
   constructor(nodeCnt: number) {

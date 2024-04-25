@@ -5,18 +5,17 @@ import { planShortestPath } from "./djShortest";
 test("fully connected trigangle factory", () => {
   const simpliestFactory = new FactoryMap(3);
   const [A, B, C] = simpliestFactory.listNodes();
-  A.twoWayTo(B);
-  B.twoWayTo(C);
-  C.twoWayTo(A);
+  simpliestFactory.twoWayLink(A, [B, C]);
+  simpliestFactory.twoWayLink(B, [C]);
 
   const jobs: Job[] = [
-    new Job(1, B.id, A.id),
-    new Job(1, A.id, B.id),
-    new Job(2, B.id, A.id),
-    new Job(5, B.id, A.id),
+    new Job(1, B, A),
+    new Job(1, A, B),
+    new Job(2, B, A),
+    new Job(5, B, A),
   ];
 
-  const agvs = [new Agv(simpliestFactory, A.id, planShortestPath)];
+  const agvs = [new Agv(simpliestFactory, A, planShortestPath)];
 
   simulation({ jobs: jobs, agvs: agvs, iteration_cnt: 20 });
   expect(1 + 1).toBe(2);
