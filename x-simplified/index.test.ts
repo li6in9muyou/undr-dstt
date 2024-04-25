@@ -20,3 +20,31 @@ test("fully connected trigangle factory", () => {
   simulation({ jobs: jobs, agvs: agvs, iteration_cnt: 20 });
   expect(1 + 1).toBe(2);
 });
+
+test("10x10 grid", () => {
+  const GRID_SIZE = 3;
+  const grid = new FactoryMap(GRID_SIZE * GRID_SIZE);
+  const nodes = grid.listNodes();
+  const rows = Array.from(nodes).reduce((manyRow, node) => {
+    let lastRow = manyRow[manyRow.length - 1];
+    const shouldNextRow = lastRow === undefined || lastRow.length === GRID_SIZE;
+    if (shouldNextRow) {
+      lastRow = [];
+      manyRow.push(lastRow);
+    }
+    lastRow.push(node);
+    return manyRow;
+  }, [] as number[][]);
+
+  rows.forEach((row) => {
+    for (let i = 0; i < row.length - 1; i++) {
+      grid.twoWayLink(row[i], [row[i + 1]]);
+    }
+  });
+
+  const jobs: Job[] = [];
+  const agvs: Agv[] = [];
+
+  console.log(rows);
+  console.log(grid);
+});
