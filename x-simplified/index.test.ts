@@ -23,6 +23,7 @@ test("fully connected trigangle factory", () => {
 
 test("10x10 grid", () => {
   const GRID_SIZE = 6;
+  const SIM_ITERATION = 10;
   const grid = new FactoryMap(GRID_SIZE * GRID_SIZE);
   const nodes = grid.listNodes();
   const rows = Array.from(nodes).reduce((manyRow, node) => {
@@ -65,8 +66,38 @@ test("10x10 grid", () => {
 
   zip((column: number[]) => connectBetween(grid, column), ...rows);
 
-  const jobs: Job[] = [];
-  const agvs: Agv[] = [];
+  const adj = grid.listAdjacentNodes();
+  const corners = Array.from(adj.entries())
+    .filter(([_, ngb]) => ngb.length === 2)
+    .map(([k, _]) => k);
 
-  console.log(grid.listAdjacentNodes());
+  function sample<T>(array: T[], n = 1): T[] {
+    console.assert(
+      array.length > n,
+      "sample: array.length must be bigger than n",
+    );
+
+    const result: T[] = [];
+    const taken = new Set<number>();
+
+    while (result.length < n) {
+      const i = Math.floor(Math.random() * array.length);
+      if (!taken.has(i)) {
+        result.push(array[i]);
+        taken.add(i);
+      }
+    }
+
+    return result;
+  }
+
+  const jobs: Job[] = new Array(SIM_ITERATION).fill(null).map((_, idx) => {
+    const arrive_at = idx + 1;
+    const [from, to] = sample(corners, 2);
+    return new Job(arrive_at, from, to);
+  });
+
+  const agvs: Agv[] = [new Agv(grid, grid.listNodes()[3], planShortestPath)];
+
+  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: SIM_ITERATION * 7 });
 });
