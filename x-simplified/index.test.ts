@@ -36,11 +36,34 @@ test("10x10 grid", () => {
     return manyRow;
   }, [] as number[][]);
 
-  rows.forEach((row) => {
-    for (let i = 0; i < row.length - 1; i++) {
-      grid.twoWayLink(row[i], [row[i + 1]]);
+  function connectBetween(world: FactoryMap, nodes: number[]): void {
+    for (let i = 0; i < nodes.length - 1; i++) {
+      world.twoWayLink(nodes[i], [nodes[i + 1]]);
     }
-  });
+  }
+
+  rows.forEach((row) => connectBetween(grid, row));
+
+  function zip(
+    fn: (zipped: any[], index: number, arrays: any[][]) => any,
+    ...arrays: any[][]
+  ): void {
+    const arrLen = arrays[0].length;
+    console.assert(
+      arrays.every((arr) => arr.length === arrLen),
+      "zip: arrays must have same length",
+    );
+
+    for (let i = 0; i < arrLen; i++) {
+      const zipped: any[] = [];
+      for (const array of arrays) {
+        zipped.push(array[i]);
+      }
+      fn(zipped, i, arrays);
+    }
+  }
+
+  zip((column: number[]) => connectBetween(grid, column), ...rows);
 
   const jobs: Job[] = [];
   const agvs: Agv[] = [];
