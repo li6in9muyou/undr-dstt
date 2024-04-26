@@ -22,7 +22,7 @@ test("fully connected trigangle factory", () => {
 });
 
 test("10x10 grid", () => {
-  const GRID_SIZE = 3;
+  const GRID_SIZE = 6;
   const grid = new FactoryMap(GRID_SIZE * GRID_SIZE);
   const nodes = grid.listNodes();
   const rows = Array.from(nodes).reduce((manyRow, node) => {
