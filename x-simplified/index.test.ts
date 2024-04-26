@@ -45,6 +45,5 @@ test("10x10 grid", () => {
   const jobs: Job[] = [];
   const agvs: Agv[] = [];
 
-  console.log(rows);
-  console.log(grid);
+  console.log(grid.listAdjacentNodes());
 });

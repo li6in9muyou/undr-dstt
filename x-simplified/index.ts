@@ -135,6 +135,14 @@ class GraphNode {
 
 export class FactoryMap {
   private nodes: Map<number, GraphNode> = new Map();
+  public listAdjacentNodes(): Map<number, number[]> {
+    return new Map(
+      Array.from(this.nodes).map(([k, gn]) => [
+        k,
+        gn.neighbours.map((n) => n.id),
+      ]),
+    );
+  }
   public listNodes(): number[] {
     return Array.from(this.nodes.values()).map((node) => node.id);
   }
