@@ -1,3 +1,5 @@
+import _ from "lodash-es";
+
 const SIM_CTX = { elapsed: NaN };
 
 function interalTraceAgvFetch(
@@ -336,21 +338,58 @@ export function simulation(config: {
     }
     agvs.forEach((agv) => agv.update(elapsed));
   }
-  const turn_around_time = jobs.map(
-    (job) => job.completion_time - job.arrival_time,
-  );
-  const run_time = jobs.map((job) => job.completion_time - job.start_time);
-  const wait_time = jobs.map((job) => job.start_time - job.arrival_time);
+  class JobStat {
+    public turn_around_time: number;
+    public wait_time: number;
+    public run_time: number;
+  }
+  const jobs_with_stat: (JobStat & Job)[] = jobs.map((job) => {
+    const jobStat = _.cloneDeep(job) as JobStat & Job;
+    jobStat.turn_around_time = jobStat.completion_time - jobStat.arrival_time;
+    jobStat.run_time = jobStat.completion_time - jobStat.start_time;
+    jobStat.wait_time = jobStat.start_time - jobStat.arrival_time;
+    return jobStat;
+  });
+  const turn_around_time = _.map(jobs_with_stat, "turn_around_time");
+  const run_time = _.map(jobs_with_stat, "run_time");
+  const wait_time = _.map(jobs_with_stat, "wait_time");
   console.log(
     `average: turn around time ${turn_around_time.reduce((sum, x) => sum + x, 0) / jobs.length}, ` +
       `run time ${run_time.reduce((sum, x) => sum + x, 0) / jobs.length}, ` +
       `wait time ${wait_time.reduce((sum, x) => sum + x, 0) / jobs.length}`,
   );
+  const min_turn_around_time = Math.min(...turn_around_time);
+  const min_run_time = Math.min(...run_time);
+  const min_wait_time = Math.min(...wait_time);
+  const max_turn_around_time = Math.max(...turn_around_time);
+  const max_run_time = Math.max(...run_time);
+  const max_wait_time = Math.max(...wait_time);
   console.log(
-    `min-max: turn around time ${Math.min(...turn_around_time)}<${Math.max(...turn_around_time)}, ` +
-      `run time ${Math.min(...run_time)}<${Math.max(...run_time)}, ` +
-      `wait time ${Math.min(...wait_time)}<${Math.max(...wait_time)}`,
+    `min-max: turn around time ${min_turn_around_time}<${max_turn_around_time}, ` +
+      `run time ${min_run_time}<${max_run_time}, ` +
+      `wait time ${min_wait_time}<${max_wait_time}`,
   );
+  function print_min_max_jobs(
+    measure: string,
+    min_measure: number,
+    max_measure: number,
+  ): void {
+    console.log(
+      `min ${measure}`,
+      _.filter(jobs_with_stat, [measure, min_measure]),
+    );
+    console.log(
+      `max ${measure}`,
+      _.filter(jobs_with_stat, [measure, max_measure]),
+    );
+  }
+  print_min_max_jobs(
+    "turn_around_time",
+    min_turn_around_time,
+    max_turn_around_time,
+  );
+  print_min_max_jobs("wait_time", min_wait_time, max_wait_time);
+  print_min_max_jobs("run_time", min_run_time, max_run_time);
   agvs.forEach((agv) =>
     console.log(
       `time distribution: ${agv.id} ` +

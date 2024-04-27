@@ -10,10 +10,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/mersenne-twister": "^1.1.7",
     "vite": "^5.2.9",
     "vitest": "^1.5.0"
   },
   "dependencies": {
-    "dijkstras-algorithm-ts": "^1.0.11"
+    "@types/lodash-es": "^4.17.12",
+    "lodash-es": "^4.17.21",
+    "mersenne-twister": "^1.1.0"
   }
 }
