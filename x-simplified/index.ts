@@ -338,6 +338,7 @@ export function simulation(config: {
     }
     agvs.forEach((agv) => agv.update(elapsed));
   }
+  // FIXME: replace xxx_time with xxx_duration
   class JobStat {
     public turn_around_time: number;
     public wait_time: number;
@@ -358,6 +359,7 @@ export function simulation(config: {
       `run time ${run_time.reduce((sum, x) => sum + x, 0) / jobs.length}, ` +
       `wait time ${wait_time.reduce((sum, x) => sum + x, 0) / jobs.length}`,
   );
+  // TODO: put everything into print_min_max_stats
   const min_turn_around_time = Math.min(...turn_around_time);
   const min_run_time = Math.min(...run_time);
   const min_wait_time = Math.min(...wait_time);
