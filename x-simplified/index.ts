@@ -369,27 +369,34 @@ export function simulation(config: {
       `run time ${min_run_time}<${max_run_time}, ` +
       `wait time ${min_wait_time}<${max_wait_time}`,
   );
-  function print_min_max_jobs(
-    measure: string,
+  function print_min_max_stats<T>(
+    stats: T[],
+    measure: keyof T,
     min_measure: number,
     max_measure: number,
   ): void {
     console.log(
-      `min ${measure}`,
-      _.filter(jobs_with_stat, [measure, min_measure]),
+      `min ${String(measure)}`,
+      _.filter(stats, [measure, min_measure]),
     );
     console.log(
-      `max ${measure}`,
-      _.filter(jobs_with_stat, [measure, max_measure]),
+      `max ${String(measure)}`,
+      _.filter(stats, [measure, max_measure]),
     );
   }
-  print_min_max_jobs(
+  print_min_max_stats(
+    jobs_with_stat,
     "turn_around_time",
     min_turn_around_time,
     max_turn_around_time,
   );
-  print_min_max_jobs("wait_time", min_wait_time, max_wait_time);
-  print_min_max_jobs("run_time", min_run_time, max_run_time);
+  print_min_max_stats(
+    jobs_with_stat,
+    "wait_time",
+    min_wait_time,
+    max_wait_time,
+  );
+  print_min_max_stats(jobs_with_stat, "run_time", min_run_time, max_run_time);
   agvs.forEach((agv) =>
     console.log(
       `time distribution: ${agv.id} ` +
