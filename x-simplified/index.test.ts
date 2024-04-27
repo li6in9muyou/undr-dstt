@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
 import { FactoryMap, Agv, Job, simulation } from "./index";
 import { planShortestPath } from "./djShortest";
+import rng from "mersenne-twister";
 
 test("fully connected trigangle factory", () => {
   const simpliestFactory = new FactoryMap(3);
@@ -71,7 +72,11 @@ test("10x10 grid", () => {
     .filter(([_, ngb]) => ngb.length === 2)
     .map(([k, _]) => k);
 
-  function sample<T>(array: T[], n = 1): T[] {
+  function sample<T>(
+    array: T[],
+    n = 1,
+    random_fn: () => number = Math.random,
+  ): T[] {
     console.assert(
       array.length > n,
       "sample: array.length must be bigger than n",
@@ -81,7 +86,7 @@ test("10x10 grid", () => {
     const taken = new Set<number>();
 
     while (result.length < n) {
-      const i = Math.floor(Math.random() * array.length);
+      const i = Math.floor(random_fn() * array.length);
       if (!taken.has(i)) {
         result.push(array[i]);
         taken.add(i);
@@ -91,13 +96,14 @@ test("10x10 grid", () => {
     return result;
   }
 
+  const gen = new rng(55200628);
   const jobs: Job[] = new Array(SIM_ITERATION).fill(null).map((_, idx) => {
     const arrive_at = idx + 1;
-    const [from, to] = sample(corners, 2);
+    const [from, to] = sample(corners, 2, gen.random.bind(gen));
     return new Job(arrive_at, from, to);
   });
 
   const agvs: Agv[] = [new Agv(grid, grid.listNodes()[3], planShortestPath)];
 
-  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: SIM_ITERATION * 7 });
+  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: SIM_ITERATION * 8 });
 });
