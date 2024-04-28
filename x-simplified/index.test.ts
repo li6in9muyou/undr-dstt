@@ -3,6 +3,21 @@ import { FactoryMap, Agv, Job, simulation } from "./index";
 import { planShortestPath } from "./djShortest";
 import rng from "mersenne-twister";
 
+test("teleportation bug", () => {
+  const straightLine = new FactoryMap(3);
+
+  const [A, M, B] = straightLine.listNodes();
+  straightLine.twoWayLink(A, [M]);
+  straightLine.twoWayLink(M, [B]);
+
+  const jobs: Job[] = [new Job(1, B, A), new Job(2, B, A)];
+
+  const agvs = [new Agv(straightLine, M, planShortestPath)];
+  expect(planShortestPath(straightLine, B, A)).toStrictEqual([B, M, A]);
+
+  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: 18 });
+});
+
 test("fully connected trigangle factory", () => {
   const simpliestFactory = new FactoryMap(3);
   const [A, B, C] = simpliestFactory.listNodes();

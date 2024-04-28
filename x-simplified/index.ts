@@ -257,7 +257,11 @@ export class Agv {
       const already_arrived = nextLocation === undefined;
       if (!already_arrived) {
         traceAgvStartFetch(this, this.job!);
+        traceAgvLocation(this, this.location, nextLocation);
+        this.location = nextLocation;
+        return this.location;
       }
+
       if (arrived_after_this_step) {
         this.loaded = true;
         this.state = AgvS.Running;
@@ -278,7 +282,7 @@ export class Agv {
       this.location,
       this.job!.to,
     );
-    const isJobCompleted = this.location === this.job!.to;
+    const isJobCompleted = this.loaded && this.location === this.job!.to;
     const must_wait = !!nextLocation && this.factory.isOccupied(nextLocation);
     const keep_running = !isJobCompleted && !must_wait;
 
