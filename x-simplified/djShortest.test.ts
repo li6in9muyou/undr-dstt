@@ -42,7 +42,8 @@ it("should find a path", () => {
   expect(planShortestPath(world, 0, 0)).toStrictEqual([]);
 });
 
-it("should return null when there is no path", () => {
+it("should return [] when there is no path", () => {
+  // FIXME: need no class here
   const world = new (class {
     private nodes: Map<number, number[]>;
     public constructor() {
