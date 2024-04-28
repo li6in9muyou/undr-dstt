@@ -120,5 +120,5 @@ test("10x10 grid", () => {
 
   const agvs: Agv[] = [new Agv(grid, grid.listNodes()[3], planShortestPath)];
 
-  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: SIM_ITERATION * 8 });
+  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: SIM_ITERATION * 12 });
 });
