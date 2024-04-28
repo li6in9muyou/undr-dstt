@@ -112,7 +112,6 @@ export class Job {
   }
 }
 
-// TODO: make this completely contained in FactoryMap
 class GraphNode {
   private static next_id = 1000;
   public id: number;
