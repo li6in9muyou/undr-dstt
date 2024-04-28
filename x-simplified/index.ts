@@ -225,7 +225,6 @@ export class Agv {
     this.state = AgvS.Roaming;
     this.loaded = false;
 
-    // FIXME: this will break if there are multiple agvs
     traceAgvLocation(this, NaN, this.location);
   }
   public assignJob(job: Job) {
