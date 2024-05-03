@@ -3,6 +3,43 @@ import { FactoryMap, Agv, Job, simulation } from "./index";
 import { planShortestPath } from "./djShortest";
 import rng from "mersenne-twister";
 
+test("crossroads 2 agvs", () => {
+  const crossroads = new FactoryMap(5);
+
+  const [X, T, R, B, L] = crossroads.listNodes();
+  crossroads.twoWayLink(X, [T, R, B, L]);
+
+  const jobs: Job[] = [
+    new Job(1, T, B),
+    new Job(1, L, R),
+    new Job(1, L, B),
+    new Job(1, R, B),
+  ];
+
+  const agvs = [
+    new Agv(crossroads, T, planShortestPath),
+    new Agv(crossroads, X, planShortestPath),
+  ];
+  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: 25 });
+});
+
+test("crossroads", () => {
+  const crossroads = new FactoryMap(5);
+
+  const [X, T, R, B, L] = crossroads.listNodes();
+  crossroads.twoWayLink(X, [T, R, B, L]);
+
+  const jobs: Job[] = [
+    new Job(1, T, B),
+    new Job(1, L, R),
+    new Job(1, L, B),
+    new Job(1, R, B),
+  ];
+
+  const agvs = [new Agv(crossroads, X, planShortestPath)];
+  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: 25 });
+});
+
 test("teleportation bug", () => {
   const straightLine = new FactoryMap(3);
 

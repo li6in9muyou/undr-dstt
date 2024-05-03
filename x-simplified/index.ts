@@ -182,9 +182,18 @@ export class FactoryMap {
   public getById(id: number): GraphNode | null {
     return this.nodes.get(id) ?? null;
   }
-  public isOccupied(where: number): boolean {
+  public tryOccupy(where: number, who: Agv): boolean {
     console.assert(Number.isFinite(where), "querying invalid location");
-    return (this.getById(where)?.occupants.size ?? -1) > 0;
+    const node = this.getById(where);
+    const isValidNode = node !== null;
+    const canOccupy = (node?.occupants.size ?? -1) > 0;
+
+    if (isValidNode && canOccupy) {
+      node.occupants.add(who);
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 
@@ -281,7 +290,8 @@ export class Agv {
       this.job!.to,
     );
     const isJobCompleted = this.loaded && this.location === this.job!.to;
-    const must_wait = !!nextLocation && this.factory.isOccupied(nextLocation);
+    const must_wait =
+      !!nextLocation && this.factory.tryOccupy(nextLocation, this);
     const keep_running = !isJobCompleted && !must_wait;
 
     if (keep_running) {
