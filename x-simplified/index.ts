@@ -310,7 +310,7 @@ export class Agv {
 
     if (must_wait) {
       // do nothing
-      traceAgvLocation(this, this.location, nextLocation);
+      traceAgvLocation(this, this.location, this.location);
       return this.location;
     }
 
