@@ -182,7 +182,12 @@ export class FactoryMap {
   public getById(id: number): GraphNode | null {
     return this.nodes.get(id) ?? null;
   }
-  public tryOccupy(where: number, who: Agv): boolean {
+
+  public unlock(where: number, who: Agv): void {
+    this.getById(where)?.occupants.delete(who);
+  }
+
+  public tryLock(where: number, who: Agv): boolean {
     console.assert(Number.isFinite(where), "querying invalid location");
     const node = this.getById(where);
     const isValidNode = node !== null;
@@ -235,6 +240,10 @@ export class Agv {
     this.loaded = false;
 
     traceAgvLocation(this, NaN, this.location);
+    console.assert(
+      this.factory.tryLock(this.location, this),
+      "Two agvs are spawn in same location",
+    );
   }
   public assignJob(job: Job) {
     console.assert(
@@ -264,16 +273,32 @@ export class Agv {
       const already_arrived = nextLocation === undefined;
       if (!already_arrived) {
         traceAgvStartFetch(this, this.job!);
-        traceAgvLocation(this, this.location, nextLocation);
-        this.location = nextLocation;
+        const must_wait =
+          !!nextLocation && false === this.factory.tryLock(nextLocation, this);
+        if (must_wait) {
+          // do nothing
+          traceAgvLocation(this, this.location, this.location);
+        } else {
+          traceAgvLocation(this, this.location, nextLocation);
+          this.location = nextLocation;
+        }
         return this.location;
       }
 
       if (arrived_after_this_step) {
         this.loaded = true;
         this.state = AgvS.Running;
-        traceAgvLocation(this, this.location, nextLocation);
-        this.location = nextLocation;
+
+        const must_wait =
+          !!nextLocation && false === this.factory.tryLock(nextLocation, this);
+        if (must_wait) {
+          // do nothing
+          traceAgvLocation(this, this.location, this.location);
+        } else {
+          traceAgvLocation(this, this.location, nextLocation);
+          this.location = nextLocation;
+        }
+
         return this.location;
       }
 
@@ -291,11 +316,12 @@ export class Agv {
     );
     const isJobCompleted = this.loaded && this.location === this.job!.to;
     const must_wait =
-      !!nextLocation && this.factory.tryOccupy(nextLocation, this);
+      !!nextLocation && false === this.factory.tryLock(nextLocation, this);
     const keep_running = !isJobCompleted && !must_wait;
 
     if (keep_running) {
       traceAgvLocation(this, this.location, nextLocation);
+      this.factory.unlock(this.location, this);
       this.location = nextLocation;
       return this.location;
     }
