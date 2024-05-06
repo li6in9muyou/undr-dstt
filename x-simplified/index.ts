@@ -186,7 +186,7 @@ export class FactoryMap {
     console.assert(Number.isFinite(where), "querying invalid location");
     const node = this.getById(where);
     const isValidNode = node !== null;
-    const canOccupy = (node?.occupants.size ?? -1) > 0;
+    const canOccupy = (node?.occupants.size ?? NaN) === 0;
 
     if (isValidNode && canOccupy) {
       node.occupants.add(who);
