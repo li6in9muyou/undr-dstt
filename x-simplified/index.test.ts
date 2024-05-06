@@ -3,6 +3,33 @@ import { FactoryMap, Agv, Job, simulation } from "./index";
 import { planShortestPath } from "./djShortest";
 import rng from "mersenne-twister";
 
+test("FactoryMap", () => {
+  // TODO: document expected behaviour with it("should ...", ...)
+  const crossroads = new FactoryMap(5);
+
+  const [X, T, R, B, L, bad] = crossroads.listNodes();
+  expect(bad).toBeUndefined();
+
+  crossroads.twoWayLink(X, [T, R, B, L]);
+  expect(crossroads.getNeighbours(X)).toEqual(
+    expect.arrayContaining([T, R, B, L]),
+  );
+
+  const foo = new Agv(crossroads, T, () => []);
+  const bar = new Agv(crossroads, B, () => []);
+  expect(crossroads.tryLock(X, foo)).toBeTruthy();
+  expect(crossroads.tryLock(X, bar)).toBeFalsy();
+  expect(crossroads.tryLock(X, bar)).toBeFalsy();
+  expect(crossroads.tryLock(X, bar)).toBeFalsy();
+
+  crossroads.unlock(X, bar);
+  expect(crossroads.tryLock(X, bar)).toBeFalsy();
+  crossroads.unlock(X, foo);
+  expect(crossroads.tryLock(X, bar)).toBeTruthy();
+
+  expect(crossroads.tryLock(NaN, bar)).toBeFalsy();
+});
+
 test("crossroads 2 agvs", () => {
   const crossroads = new FactoryMap(5);
 
