@@ -1,0 +1,13 @@
+{
+  "name": "li6q-undr-dstt",
+  "version": "1.0.0",
+  "description": "li6in9muyou's undergraduate dissertation",
+  "main": "",
+  "scripts": {
+    "dev": "nodemon -w . -e md -x \"pandoc --citeproc dstt.md -o build/dstt.word --to html5 --standalone -o build/dstt.html\"",
+    "preview": "live-server build --open=/dstt.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
