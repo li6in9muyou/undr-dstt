@@ -4,8 +4,8 @@
   "description": "li6in9muyou's undergraduate dissertation",
   "main": "",
   "scripts": {
-    "dev": "nodemon -w . -e md -x \"pandoc --citeproc dstt.md -o build/dstt.word --to html5 --standalone -o build/dstt.html\"",
-    "preview": "live-server build --open=/dstt.html"
+    "dev": "nodemon -w . -e md -x \"pandoc --citeproc --toc dstt.md --to html5 --standalone -o build/dstt.html; live-server build --open=/dstt.html\"",
+    "build": "pandoc --citeproc --toc dstt.md -o build/dstt.docx"
   },
   "keywords": [],
   "author": "",
