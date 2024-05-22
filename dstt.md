@@ -41,10 +41,15 @@ English abstract will be added after revisions.
 
 **关键词：**agv、路线规划、最短路径算法
 
+# 综述
+
+TODO：这里写其他人写的论文
+
 
 # 系统整体设计与实现
 
 ## 概述
+
 本文设计了一个 agv 调度和路线规划的模拟仿真程序，可以自动的生成货物运输任务，然后把这些任务指派给 agv ，然后再逐一对每个 agv 指挥其走行，经过在不同规模地图的实验，本系统可以保证 agv 不相撞，并能高效的完成货物运输任务。本文用 typescript 程序设计语言，结合 nodemon、npm、vitest、vite 等现代化主流 web 开发工具链进行开发，文本编辑器使用 neovim 。
 
 ## 主要组成部分
