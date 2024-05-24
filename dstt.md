@@ -64,6 +64,25 @@ automated guided vehicle systems"
     title: "时间窗约束下的 AGV 动态路径规划"
     volume: 32
     issue: 11
+    container-title: "微型电脑应用"
+    language: chinese
+  - type: article-journal
+    id: li23
+    author:
+      - family: 李
+        given: 腾
+      - family: 丁
+        given: 佩佩
+      - family: 张
+        given: 茹兰
+    issued:
+      date-parts:
+        - - 2023
+          - 8
+          - 3
+    title: "基于动态避障优先级与预测的多AGV无冲突路径规划"
+    container-title: "系统工程"
+    language: chinese
 ---
 
 # 摘要
@@ -89,6 +108,7 @@ TODO：这里写其他人写的论文
 此外，如果AGV在中心点停滞时间超过顶点权重当前值，则会进行初步更新，提前增加顶点权重。
 这种动态规划路径的方法能在拥挤的AGV系统显著提高系统吞吐量。
 [zhang16]使用了时间窗用于确保AGV在规划路径上行驶时，不会与其他AGV或系统内的其他活动发生冲突，进而在路径规划过程中，如果发现当前路径上的某个点的时间窗已被占用，算法会重新规划路径，避开冲突，并更新时间窗信息。
+[li23]考虑了包括空载和重载状态下的 agv 运行成本在内的多个维度的避障成本，进而让避障成本低的避让避障成本高的 agv ，并以此为启发式来改进A\*算法优化了路径规划过程，本文用的是栅格化地图模型。
 
 # 系统整体设计与实现
 
