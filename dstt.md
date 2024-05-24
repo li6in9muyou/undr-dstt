@@ -200,4 +200,4 @@ agv 被建模为一个简单数据对象，里面存储的信息如下：
 
 感谢我每天使用的开发工具的所有开发者、维护者、贡献者。
 我免费的使用这些开源且免费的工具以及很多闭源但免费的工具，我非常的感激。
-这些工具包括但不限于，排名不分先后：git 、 neovim 、 Chrome the web browser 、 Google the search engine 、 typescript 、 npm 、 nodejs 、 GitHub 。
+这些工具包括但不限于（排名不分先后）：git 、 neovim 、 Chrome the web browser 、 Google the search engine 、 typescript 、 npm 、 nodejs 、 GitHub 、Windows Terminal。
