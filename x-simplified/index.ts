@@ -280,6 +280,7 @@ export class Agv {
           traceAgvLocation(this, this.location, this.location);
         } else {
           traceAgvLocation(this, this.location, nextLocation);
+          this.factory.unlock(this.location, this);
           this.location = nextLocation;
         }
         return this.location;
@@ -296,6 +297,7 @@ export class Agv {
           traceAgvLocation(this, this.location, this.location);
         } else {
           traceAgvLocation(this, this.location, nextLocation);
+          this.factory.unlock(this.location, this);
           this.location = nextLocation;
         }
 
