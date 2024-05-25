@@ -62,7 +62,7 @@ test("crossroads", () => {
   simulation({ jobs: jobs, agvs: agvs, iteration_cnt: 25 });
 });
 
-test("teleportation bug", () => {
+test("trivial", () => {
   const straightLine = new FactoryMap(3);
 
   const [A, M, B] = straightLine.listNodes();
@@ -117,13 +117,13 @@ test("10x10 grid", () => {
     return manyRow;
   }, [] as number[][]);
 
-  function connectBetween(world: FactoryMap, nodes: number[]): void {
+  function connectBetweenNodes(world: FactoryMap, nodes: number[]): void {
     for (let i = 0; i < nodes.length - 1; i++) {
       world.twoWayLink(nodes[i], [nodes[i + 1]]);
     }
   }
 
-  rows.forEach((row) => connectBetween(grid, row));
+  rows.forEach((row) => connectBetweenNodes(grid, row));
 
   function zip(
     fn: (zipped: any[], index: number, arrays: any[][]) => any,
@@ -144,7 +144,7 @@ test("10x10 grid", () => {
     }
   }
 
-  zip((column: number[]) => connectBetween(grid, column), ...rows);
+  zip((column: number[]) => connectBetweenNodes(grid, column), ...rows);
 
   const adj = grid.listAdjacentNodes();
   const corners = Array.from(adj.entries())
