@@ -245,6 +245,7 @@ export class Agv {
       "Two agvs are spawn in same location",
     );
   }
+
   public assignJob(job: Job) {
     console.assert(
       this.job === null,
@@ -254,6 +255,7 @@ export class Agv {
     this.job = job;
     traceJobAssigned(job, this);
   }
+
   public update(elapsed: number): number {
     if (this.isIdle()) {
       // idle, do not move
@@ -269,12 +271,14 @@ export class Agv {
         this.location,
         this.job!.from,
       );
+
       const arrived_after_this_step = nextLocation === this.job!.from;
       const already_arrived = nextLocation === undefined;
       if (!already_arrived) {
         traceAgvStartFetch(this, this.job!);
         const must_wait =
           !!nextLocation && false === this.factory.tryLock(nextLocation, this);
+
         if (must_wait) {
           // do nothing
           traceAgvLocation(this, this.location, this.location);
@@ -345,9 +349,11 @@ export class Agv {
     console.assert(false, "Agv::update: logic error, invalide execution path");
     throw "LOGIC ERROR";
   }
+
   public isIdle(): boolean {
     return this.job === null;
   }
+
   public isFetching(): boolean {
     return this.job !== null && !this.loaded;
   }
@@ -390,6 +396,7 @@ export function simulation(config: {
     public wait_time: number;
     public run_time: number;
   }
+
   const jobs_with_stat: (JobStat & Job)[] = jobs.map((job) => {
     const jobStat = _.cloneDeep(job) as JobStat & Job;
     jobStat.turn_around_time = jobStat.completion_time - jobStat.arrival_time;
@@ -417,6 +424,7 @@ export function simulation(config: {
       `run time ${min_run_time}<${max_run_time}, ` +
       `wait time ${min_wait_time}<${max_wait_time}`,
   );
+
   function print_min_max_stats<T>(
     stats: T[],
     measure: keyof T,
@@ -432,6 +440,7 @@ export function simulation(config: {
       _.filter(stats, [measure, max_measure]),
     );
   }
+
   print_min_max_stats(
     jobs_with_stat,
     "turn_around_time",
