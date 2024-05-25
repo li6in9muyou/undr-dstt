@@ -1,4 +1,4 @@
----
+	---
 title: AGV调度系统的设计与实现
 link-citations: true
 link-bibliography: true
@@ -83,6 +83,23 @@ references:
     title: "基于动态避障优先级与预测的多AGV无冲突路径规划"
     container-title: "系统工程"
     language: chinese
+  - type: article-journal
+    id: Dijkstra1959
+    author:
+      - family: Dijkstra
+        given: E. W.
+    issued:
+      date-parts:
+        - - 1959
+          - 12
+          - 1
+    title: "A note on two problems in connexion with graphs"
+    container-title: "Numerische Mathematik"
+    volume: 1
+    issue: 1
+    page: 269-271
+    DOI: 10.1007/BF01386390
+    language: english
 ---
 
 # 摘要
@@ -187,7 +204,7 @@ AGV 被建模为一个简单数据对象，里面存储的信息如下：
 
 算法输出：地图节点列表，用其 id 表示。保证该列表开头和最后一个元素为输入的两个节点，若没有路径，输出控列表。
 
-算法步骤：迪杰斯特拉最小路径算法。
+算法步骤：[@Dijkstra1959]描述的最短路径算法
 
 ## AGV 走行控制算法
 
