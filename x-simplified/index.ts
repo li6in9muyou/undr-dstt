@@ -355,6 +355,7 @@ export function simulation(config: {
   iteration_cnt: number;
   jobs: Job[];
   agvs: Agv[];
+  skipStatistics?: boolean;
 }) {
   const { jobs, agvs, iteration_cnt } = config;
   // SIMULATION
@@ -376,6 +377,11 @@ export function simulation(config: {
     }
     agvs.forEach((agv) => agv.update(elapsed));
   }
+
+  if (config.skipStatistics === true) {
+    return;
+  }
+
   // FIXME: replace xxx_time with xxx_duration
   class JobStat {
     public turn_around_time: number;

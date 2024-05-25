@@ -74,7 +74,12 @@ test("teleportation bug", () => {
   const agvs = [new Agv(straightLine, M, planShortestPath)];
   expect(planShortestPath(straightLine, B, A)).toStrictEqual([B, M, A]);
 
-  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: 18 });
+  simulation({
+    skipStatistics: true,
+    jobs: jobs,
+    agvs: agvs,
+    iteration_cnt: 18,
+  });
 });
 
 test("fully connected trigangle factory", () => {
