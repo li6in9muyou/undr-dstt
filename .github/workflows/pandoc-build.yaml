@@ -5,6 +5,7 @@ on: push
 jobs:
   convert_via_pandoc:
     permissions:
+      pages: write
       id-token: write
     runs-on: ubuntu-22.04
     steps:
@@ -16,4 +17,4 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: './build'
-      - uses: actions/deploy-pages@v1
+      - uses: actions/deploy-pages@v4
