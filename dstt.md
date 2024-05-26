@@ -100,6 +100,54 @@ references:
     page: 269-271
     DOI: 10.1007/BF01386390
     language: english
+
+  - type: article-journal
+    id: Hart1968
+    author:
+      - family: Hart
+        given: P. E.
+      - family: Nilsson
+        given: N. J.
+      - family: Raphael
+        given: B.
+    issued:
+      date-parts:
+        - - 1968
+          - 7
+          - 1
+    title: "A Formal Basis for the Heuristic Determination of Minimum Cost Paths"
+    container-title: "IEEE Transactions on Systems Science and Cybernetics"
+    volume: 4
+    issue: 2
+    page: 100-107
+    DOI: 10.1109/TSSC.1968.300136
+    language: english
+
+  - type: article-journal
+    id: Tang21
+    author:
+      - family: Tang
+        given: Gang
+      - family: Tang
+        given: Congqiang
+      - family: Claramunt
+        given: Christophe
+      - family: Hu
+        given: Xiong
+      - family: Zhou
+        given: Peipei
+    issued:
+      date-parts:
+        - - 2021
+          - 3
+          - 4
+    title: "Geometric A-Star Algorithm: An Improved A-Star Algorithm for AGV Path Planning in a Port Environment"
+    container-title: "IEEE Access"
+    volume: 9
+    issue:
+    page: 59196-59210
+    DOI: 10.1109/ACCESS.2021.3070054
+    language: english
 ---
 
 # 摘要
@@ -125,7 +173,8 @@ TODO：这里写其他人写的论文
 此外，如果 AGV 在中心点停滞时间超过顶点权重当前值，则会进行初步更新，提前增加顶点权重。
 这种动态规划路径的方法能在拥挤的 AGV 系统显著提高系统吞吐量。
 [@zhang16]使用了时间窗用于确保 AGV 在规划路径上行驶时，不会与其他 AGV 或系统内的其他活动发生冲突，进而在路径规划过程中，如果发现当前路径上的某个点的时间窗已被占用，算法会重新规划路径，避开冲突，并更新时间窗信息。
-[@li23]考虑了包括空载和重载状态下的 AGV 运行成本在内的多个维度的避障成本，进而让避障成本低的避让避障成本高的 AGV ，并以此为启发式来改进A\*算法优化了路径规划过程，本文用的是栅格化地图模型。
+[@li23]考虑了包括空载和重载状态下的 AGV 运行成本在内的多个维度的避障成本，进而让避障成本低的避让避障成本高的 AGV ，并以此为启发式来改进A\*算法[@Hart1968]优化了路径规划过程，本文用的是栅格化地图模型。
+[@Tang21]也对A\*算法做了调整来适应用网格建模的地图，首先是从A\*算法的 `open-list` 中选择了欧几里得距离作为启发式函数，以更准确地反映节点间的实际距离。与传统的曼哈顿距离相比，欧几里得距离能够提供更短、更直接的路径，从而提高了路径规划的效率，并选择了欧几里得距离作为启发式函数，以更准确地反映节点间的实际距离。与传统的曼哈顿距离相比，欧几里得距离能够提供更短、更直接的路径，从而提高了路径规划的效率，最终提高了路径规划的效率和平滑度。
 
 # 系统整体设计与实现
 
