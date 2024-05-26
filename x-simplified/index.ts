@@ -40,8 +40,8 @@ function traceAgvLocation(
       case AgvS.Running:
         agv.stats_running_time.add(SIM_CTX.elapsed);
         break;
-      default:
-        // ignored
+      case AgvS.Fetching:
+        agv.stats_fetching_time.add(SIM_CTX.elapsed);
         break;
     }
   }
