@@ -16,7 +16,7 @@ jobs:
       - run: mkdir ./build
       - uses: docker://pandoc/core:3.1.13
         with:
-          args: --citeproc --toc --standalone dstt.md -t html5 -o build/index.html
+          args: --citeproc --toc --standalone --csl https://www.zotero.org/styles/china-national-standard-gb-t-7714-2015-numeric dstt.md -t html5 -o build/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: './build'
