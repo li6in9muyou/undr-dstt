@@ -42,7 +42,10 @@ test("deadlock 2 agvs", () => {
     new Agv(crossroads, T, planShortestPath),
     new Agv(crossroads, B, planShortestPath),
   ];
-  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: 6 });
+
+  const ITERATION_CNT = 6;
+  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: ITERATION_CNT });
+  expect(jobs.every((job) => job.completion_time < ITERATION_CNT)).toBeTruthy();
 });
 
 test("crossroads", () => {
