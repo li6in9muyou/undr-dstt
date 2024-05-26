@@ -380,7 +380,15 @@ export function simulation(config: {
     }
     if (queuedJobs.length > 0) {
       for (const agv of idle_agv) {
-        agv.assignJob(queuedJobs.pop()!);
+        const [jobOnTheSpot] = _.remove(
+          queuedJobs,
+          (job) => job.from === agv.location,
+        );
+        if (undefined !== jobOnTheSpot) {
+          agv.assignJob(jobOnTheSpot);
+        } else {
+          agv.assignJob(queuedJobs.pop()!);
+        }
       }
     }
     agvs.forEach((agv) => agv.update(elapsed));
