@@ -16,7 +16,7 @@ jobs:
       - run: mkdir ./build
       - uses: docker://pandoc/core:3.1.13
         with:
-          args: --citeproc --toc dstt.md --standalone -t html5 -o build/index.html
+          args: --citeproc --toc --standalone dstt.md -t html5 -o build/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: './build'
