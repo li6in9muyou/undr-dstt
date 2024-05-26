@@ -42,7 +42,7 @@ test("deadlock 2 agvs", () => {
     new Agv(crossroads, T, planShortestPath),
     new Agv(crossroads, B, planShortestPath),
   ];
-  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: 4 });
+  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: 6 });
 });
 
 test("crossroads", () => {
