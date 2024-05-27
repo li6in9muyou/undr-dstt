@@ -100,7 +100,6 @@ references:
     page: 269-271
     DOI: 10.1007/BF01386390
     language: english
-
   - type: article-journal
     id: Hart1968
     author:
@@ -122,7 +121,6 @@ references:
     page: 100-107
     DOI: 10.1109/TSSC.1968.300136
     language: english
-
   - type: article-journal
     id: Tang21
     author:
