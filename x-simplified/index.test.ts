@@ -195,3 +195,28 @@ test("10x10 grid single agv", () => {
 
   simulation({ jobs: jobs, agvs: agvs, iteration_cnt: GRID_SIZE * 30 });
 });
+
+test("10x10 grid multiple agvs", () => {
+  const GRID_SIZE = 10;
+  const JOB_CNT = 6;
+
+  const grid = makeGrid(GRID_SIZE);
+
+  const corners = Array.from(grid.listAdjacentNodes().entries())
+    .filter(([_, ngb]) => ngb.length === 2)
+    .map(([k, _]) => k);
+
+  const gen = new rng(55200628 * 1.2);
+  const jobs: Job[] = new Array(JOB_CNT).fill(null).map((_, idx) => {
+    const arrive_at = idx + 1;
+    const [from, to] = sample(corners, 2, gen.random.bind(gen));
+    return new Job(arrive_at, from, to);
+  });
+
+  const agvs: Agv[] = [
+    new Agv(grid, grid.listNodes()[14], planShortestPath),
+    new Agv(grid, grid.listNodes()[25], planShortestPath),
+  ];
+
+  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: GRID_SIZE * 9 });
+});
