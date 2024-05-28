@@ -104,14 +104,61 @@ test("fully connected trigangle factory", () => {
   expect(1 + 1).toBe(2);
 });
 
-test("10x10 grid", () => {
-  const GRID_SIZE = 10;
-  const JOB_CNT = 3;
-  const grid = new FactoryMap(GRID_SIZE * GRID_SIZE);
+function sample<T>(
+  array: T[],
+  n = 1,
+  random_fn: () => number = Math.random,
+): T[] {
+  console.assert(
+    array.length > n,
+    "sample: array.length must be bigger than n",
+  );
+
+  const result: T[] = [];
+  const taken = new Set<number>();
+
+  while (result.length < n) {
+    const i = Math.floor(random_fn() * array.length);
+    if (!taken.has(i)) {
+      result.push(array[i]);
+      taken.add(i);
+    }
+  }
+
+  return result;
+}
+
+function connectBetweenNodes(world: FactoryMap, nodes: number[]): void {
+  for (let i = 0; i < nodes.length - 1; i++) {
+    world.twoWayLink(nodes[i], [nodes[i + 1]]);
+  }
+}
+
+function zip(
+  fn: (zipped: any[], index: number, arrays: any[][]) => any,
+  ...arrays: any[][]
+): void {
+  const arrLen = arrays[0].length;
+  console.assert(
+    arrays.every((arr) => arr.length === arrLen),
+    "zip: arrays must have same length",
+  );
+
+  for (let i = 0; i < arrLen; i++) {
+    const zipped: any[] = [];
+    for (const array of arrays) {
+      zipped.push(array[i]);
+    }
+    fn(zipped, i, arrays);
+  }
+}
+
+function makeGrid(size: number) {
+  const grid = new FactoryMap(size * size);
   const nodes = grid.listNodes();
   const rows = Array.from(nodes).reduce((manyRow, node) => {
     let lastRow = manyRow[manyRow.length - 1];
-    const shouldNextRow = lastRow === undefined || lastRow.length === GRID_SIZE;
+    const shouldNextRow = lastRow === undefined || lastRow.length === size;
     if (shouldNextRow) {
       lastRow = [];
       manyRow.push(lastRow);
@@ -120,65 +167,24 @@ test("10x10 grid", () => {
     return manyRow;
   }, [] as number[][]);
 
-  function connectBetweenNodes(world: FactoryMap, nodes: number[]): void {
-    for (let i = 0; i < nodes.length - 1; i++) {
-      world.twoWayLink(nodes[i], [nodes[i + 1]]);
-    }
-  }
-
   rows.forEach((row) => connectBetweenNodes(grid, row));
-
-  function zip(
-    fn: (zipped: any[], index: number, arrays: any[][]) => any,
-    ...arrays: any[][]
-  ): void {
-    const arrLen = arrays[0].length;
-    console.assert(
-      arrays.every((arr) => arr.length === arrLen),
-      "zip: arrays must have same length",
-    );
-
-    for (let i = 0; i < arrLen; i++) {
-      const zipped: any[] = [];
-      for (const array of arrays) {
-        zipped.push(array[i]);
-      }
-      fn(zipped, i, arrays);
-    }
-  }
-
   zip((column: number[]) => connectBetweenNodes(grid, column), ...rows);
+
+  return grid;
+}
+
+test("10x10 grid single agv", () => {
+  const GRID_SIZE = 10;
+  const JOB_CNT = 3;
+
+  const grid = makeGrid(GRID_SIZE);
 
   const adj = grid.listAdjacentNodes();
   const corners = Array.from(adj.entries())
     .filter(([_, ngb]) => ngb.length === 2)
     .map(([k, _]) => k);
 
-  function sample<T>(
-    array: T[],
-    n = 1,
-    random_fn: () => number = Math.random,
-  ): T[] {
-    console.assert(
-      array.length > n,
-      "sample: array.length must be bigger than n",
-    );
-
-    const result: T[] = [];
-    const taken = new Set<number>();
-
-    while (result.length < n) {
-      const i = Math.floor(random_fn() * array.length);
-      if (!taken.has(i)) {
-        result.push(array[i]);
-        taken.add(i);
-      }
-    }
-
-    return result;
-  }
-
-  const gen = new rng(55200628);
+  const gen = new rng(55200628 + 2);
   const jobs: Job[] = new Array(JOB_CNT).fill(null).map((_, idx) => {
     const arrive_at = idx + 1;
     const [from, to] = sample(corners, 2, gen.random.bind(gen));
