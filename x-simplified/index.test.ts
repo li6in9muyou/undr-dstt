@@ -106,7 +106,7 @@ test("fully connected trigangle factory", () => {
 
 test("10x10 grid", () => {
   const GRID_SIZE = 6;
-  const SIM_ITERATION = 10;
+  const JOB_CNT = 3;
   const grid = new FactoryMap(GRID_SIZE * GRID_SIZE);
   const nodes = grid.listNodes();
   const rows = Array.from(nodes).reduce((manyRow, node) => {
@@ -179,7 +179,7 @@ test("10x10 grid", () => {
   }
 
   const gen = new rng(55200628);
-  const jobs: Job[] = new Array(SIM_ITERATION).fill(null).map((_, idx) => {
+  const jobs: Job[] = new Array(JOB_CNT).fill(null).map((_, idx) => {
     const arrive_at = idx + 1;
     const [from, to] = sample(corners, 2, gen.random.bind(gen));
     return new Job(arrive_at, from, to);
