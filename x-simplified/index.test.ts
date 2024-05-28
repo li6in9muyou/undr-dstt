@@ -105,7 +105,7 @@ test("fully connected trigangle factory", () => {
 });
 
 test("10x10 grid", () => {
-  const GRID_SIZE = 6;
+  const GRID_SIZE = 10;
   const JOB_CNT = 3;
   const grid = new FactoryMap(GRID_SIZE * GRID_SIZE);
   const nodes = grid.listNodes();
@@ -187,5 +187,5 @@ test("10x10 grid", () => {
 
   const agvs: Agv[] = [new Agv(grid, grid.listNodes()[3], planShortestPath)];
 
-  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: SIM_ITERATION * 12 });
+  simulation({ jobs: jobs, agvs: agvs, iteration_cnt: GRID_SIZE * 30 });
 });
