@@ -5,13 +5,10 @@ const SIM_CTX = { elapsed: NaN };
 function interalTraceAgvFetch(
   isDone: boolean,
   agv: Agv,
-  job: Job,
+  _: Job,
 ): { done: boolean; agv: string } {
   if (!isDone) {
     agv.stats_fetching_time.add(SIM_CTX.elapsed);
-    console.log(
-      `${agv.id} fetching: destination ${job.from} current ${agv.location}`,
-    );
   }
   return { done: isDone, agv: agv.id };
 }
