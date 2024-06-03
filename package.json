@@ -5,7 +5,8 @@
   "main": "",
   "scripts": {
     "dev": "nodemon -w . -e md -x \"pandoc --citeproc --toc dstt.md --to html5 --standalone -o build/dstt.html; live-server build --open=/dstt.html\"",
-    "build": "pandoc --citeproc --toc dstt.md -o build/dstt.docx"
+    "build": "pandoc --citeproc --toc dstt.md -o build/dstt.docx",
+    "build-pres": "pandoc --slide-level 2 --embed-resources --standalone -t revealjs -o build/ppt.html ./presentation.md"
   },
   "keywords": [],
   "author": "",
