@@ -5,6 +5,7 @@ on:
     paths:
       - dstt.md
       - presentation.md
+      - .github
 
 jobs:
   convert_via_pandoc:
