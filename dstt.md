@@ -189,6 +189,10 @@ references:
     language: chinese
 ---
 
+**WARNING: this document is out-of-date, see `./dstt.docx` for latest updates.**
+**WARNING: this document is out-of-date, see `./dstt.docx` for latest updates.**
+**WARNING: this document is out-of-date, see `./dstt.docx` for latest updates.**
+
 TODO: 全文需要20000个字。
 
 # 摘要
