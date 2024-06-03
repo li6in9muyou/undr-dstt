@@ -377,10 +377,10 @@ export function simulation(config: {
     }
     if (queuedJobs.length > 0) {
       for (const agv of idle_agv) {
-        const [jobOnTheSpot] = _.remove(
-          queuedJobs,
+        const jobOnTheSpot = queuedJobs.find(
           (job) => job.from === agv.location,
         );
+        _.remove(queuedJobs, (job) => job === jobOnTheSpot);
         if (undefined !== jobOnTheSpot) {
           agv.assignJob(jobOnTheSpot);
         } else {
