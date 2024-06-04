@@ -21,7 +21,7 @@ jobs:
           args: --citeproc --toc --standalone --csl https://www.zotero.org/styles/china-national-standard-gb-t-7714-2015-numeric dstt.md -t html5 -o build/index.html
       - uses: docker://pandoc/core:3.1.13
         with:
-          args:  --slide-level 2 --embed-resources --standalone -t revealjs -V revealjs-url=https://cdn.staticfile.net/reveal.js/5.0.4/reveal.js -o build/ppt.html ./presentation.md
+          args:  --slide-level 2 --embed-resources --standalone -t revealjs -V revealjs-url=https://unpkg.com/reveal.js -o build/ppt.html ./presentation.md
       - uses: actions/upload-pages-artifact@v3
         with:
           path: './build'
